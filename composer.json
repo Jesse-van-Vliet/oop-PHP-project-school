@@ -1,0 +1,10 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Oopproj\\": "src/"
+        }
+    },
+    "require": {
+        "smarty/smarty": "^4.3"
+    }
+}
