@@ -14,9 +14,8 @@ use Oopproj\Hard;
 
 session_start();
 $admin = new Admin("admin", "admin", "het werkt");
-$easy = new  Easy("kaas");
 $medium = new Medium("water");
-$hard = new Hard("koffie");
+
 
 if (isset($_SESSION['users'])) {
     Account::$users = $_SESSION['users'];
@@ -39,8 +38,7 @@ if (isset($_GET['action'])) {
 
 echo "<pre>";
 
-//debugging
-var_dump($_SESSION);
+
 
 
 
@@ -132,12 +130,11 @@ switch ($action) {
 
 
     default:
-        $template->display('layout.tpl');
+        $template->display('index.tpl');
         break;
 
     case "logout":
-
-        if (isset($_SESSION['role']) && isset($_SESSION['user'])){
+         if (isset($_SESSION['role']) && isset($_SESSION['user'])){
             unset($_SESSION['role']);
             unset($_SESSION['user']);
             $template->assign("logoutSucces", "Logged out succesfull");
@@ -147,9 +144,31 @@ switch ($action) {
             $template->display('login.tpl');
         }
         break;
+
+    case "game":
+        if (isset($_POST['startGame'])) {
+            if (isset($_SESSION['role']) && isset($_SESSION['user'])){
+             $template->display('game.tpl');
+            } else {
+                $template->assign("loginError", "Please login first");
+                $template->display('login.tpl');
+            }
+
+        } else {
+            $template->assign("selectDifficultyError", "Something went wrong");
+            $template->display('user.tpl');
+        }
+        break;
+
+
+
+
+
 }
 
 
 $_SESSION["users"] = Account::$users;
 $_SESSION["words"] = Word::$words;
+
+
 
