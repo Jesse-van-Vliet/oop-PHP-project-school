@@ -25,13 +25,7 @@ if (isset($_SESSION['words'])) {
     Word::$words = $_SESSION['words'];
 }
 
-echo "<pre>";
 
-//debugging
-var_dump($_SESSION);
-
-
-echo "</pre>";
 
 $template = new Smarty();
 $template->setTemplateDir('template');
@@ -42,6 +36,15 @@ if (isset($_GET['action'])) {
 } else {
     $action = null;
 }
+
+echo "<pre>";
+
+//debugging
+var_dump($_SESSION);
+
+
+
+echo "</pre>";
 
 switch ($action) {
     case "registerForm":
@@ -149,3 +152,4 @@ switch ($action) {
 
 $_SESSION["users"] = Account::$users;
 $_SESSION["words"] = Word::$words;
+
