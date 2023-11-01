@@ -37,7 +37,7 @@ if (isset($_GET['action'])) {
     $action = null;
 }
 
-echo "<pre>";
+echo "<pre class='mt-5 pt-1'>";
 
 //debugging
 var_dump($_SESSION);
@@ -132,7 +132,7 @@ switch ($action) {
 
 
     default:
-        $template->display('layout.tpl');
+        $template->display('index.tpl');
         break;
 
     case "logout":
