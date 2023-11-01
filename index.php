@@ -42,8 +42,6 @@ echo "<pre class='mt-5 pt-1'>";
 //debugging
 var_dump($_SESSION);
 
-
-
 echo "</pre>";
 
 switch ($action) {

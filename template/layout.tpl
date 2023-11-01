@@ -175,7 +175,7 @@
                     </li>
                 </ul>
                 {if isset($smarty.session.user)}
-                    <a class="nav-link" href="/index.php?action=dashboard">{$smarty.session.user}</a>
+                    <a class="nav-link m-2" href="/index.php?action=dashboard">{$smarty.session.user}</a>
                     <a class="nav-link" href="/index.php?action=logoutForm">Logout</a>
                 {/if}
                 {if !isset($smarty.session.user)}
