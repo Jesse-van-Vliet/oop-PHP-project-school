@@ -37,12 +37,7 @@ if (isset($_GET['action'])) {
     $action = null;
 }
 
-echo "<pre class='mt-5 pt-1'>";
 
-//debugging
-var_dump($_SESSION);
-
-echo "</pre>";
 
 switch ($action) {
     case "registerForm":
@@ -63,7 +58,7 @@ switch ($action) {
                 $template->display("register.tpl");
             } elseif ($_POST['password1'] === $_POST['password2']) {
                 // If the username doesn't exist, and passwords match, add the user
-                $user = new \Oopproj\User($_POST['username'], $_POST['password1']);
+                $user = new User($_POST['username'], $_POST['password1']);
                 $template->assign("registerSucces", "Your account has been created, you can now login");
                 $template->display("login.tpl");
             } else {
@@ -111,6 +106,7 @@ switch ($action) {
         } else {
             $template->assign("loginError", "Please fill in all fields");
             $template->display('login.tpl');
+            break;
         }
 
         if (!$usernameExists) {
@@ -120,9 +116,58 @@ switch ($action) {
 
         break;
 
-        case "dashboard":
-            $template->display('user.tpl');
-            break;
+    case "dashboard":
+        $template->display('user.tpl');
+        break;
+
+    case "wordForm":
+        if (isset ($_SESSION['role'])){
+            if ($_SESSION['role'] == "admin") {
+                $template->display('addWords.tpl');
+            } else {
+                $template->assign("loginError", "You are not allowed to add words");
+                $template->display('login.tpl');
+            }
+        } else {
+            $template->assign("loginError", "You are not allowed to add words");
+            $template->display('login.tpl');
+        }
+        break;
+
+    case "addWord":
+        if (!empty($_POST['word'])) {
+            $wordExists = false;
+            if (strlen($_POST['word']) === 5) {
+                foreach (Word::$words as $word) {
+                    if ($word->getName() === $_POST['word']) {
+                        $wordExists = true;
+                        break;
+                    }
+                }
+                if ($wordExists) {
+                    $template->assign("wordError", value: $_POST['word'] . " already exists");
+                } else {
+                    new Medium($_POST['word']);
+                    $template->assign("wordSucces", value: $_POST['word'] . " has been added");
+                }
+            } else {
+                $template->assign("wordError", "Word must be 5 characters long");
+            }
+            $template->display('addWords.tpl');
+        } else {
+            $template->assign("wordError", "Please fill in the field");
+        }
+//        else if (!in_array($_POST['word'], Word::$words)) {
+//            $template->assign("wordError", value: $_POST['word'] . " already exists");
+//            $template->display('addWords.tpl');
+//        } else if (!empty($_POST['word'])) {
+//            new Medium($_POST['word']);
+//            $template->assign("wordSucces", value: $_POST['word'] . " has been added");
+//        } else {
+//            $template->assign("wordError", "Please fill in the field");
+//        }
+
+        break;
 
     case "logoutForm":
         $template->display('logout.tpl');
@@ -139,11 +184,10 @@ switch ($action) {
             unset($_SESSION['role']);
             unset($_SESSION['user']);
             $template->assign("logoutSucces", "Logged out succesfull");
-            $template->display('login.tpl');
         } else {
             $template->assign("logoutError", "Something went wrong");
-            $template->display('login.tpl');
         }
+        $template->display('login.tpl');
         break;
 }
 
@@ -151,3 +195,10 @@ switch ($action) {
 $_SESSION["users"] = Account::$users;
 $_SESSION["words"] = Word::$words;
 
+//echo "<pre class='mt-5 pt-1'>";
+//
+////debugging
+//var_dump($_SESSION);
+//var_dump(Word::$words);
+//
+//echo "</pre>";
