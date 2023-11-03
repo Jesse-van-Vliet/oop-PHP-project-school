@@ -22,5 +22,11 @@ abstract class Word
         return $this->name;
     }
 
+    public function getRandomWord(): string
+    {
+        $randomWord = self::$words[array_rand(self::$words)];
+        return $randomWord->getName();
+    }
+
 
 }
