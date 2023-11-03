@@ -16,8 +16,8 @@ use Oopproj\Game;
 session_start();
 $admin = new Admin("admin", "admin", "het werkt");
 $medium1 = new Medium("water");
-$medium2 = new Medium("vuur");
-$medium3 = new Medium("ijs");
+$medium2 = new Medium("toren");
+$medium3 = new Medium("kamer");
 
 
 if (isset($_SESSION['users'])) {
