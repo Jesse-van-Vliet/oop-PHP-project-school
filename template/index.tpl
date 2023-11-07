@@ -1,7 +1,6 @@
 {extends file="layout.tpl"}
 {block name="content"}
-    <button>Easy<br>4 woorden</button>
-    <button>Medium<br>5 woorden</button>
-    <button>Hard<br>6 woorden</button>
-
+    <form method="POST" action="/index.php?action=game">
+        <button type="submit" name="startGame" value="medium">Play game</button>
+    </form>
 {/block}

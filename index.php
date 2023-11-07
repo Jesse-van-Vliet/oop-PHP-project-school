@@ -10,13 +10,15 @@ use Oopproj\Word;
 use Oopproj\Medium;
 use Oopproj\Easy;
 use Oopproj\Hard;
+use Oopproj\Game;
 
 
 session_start();
 $admin = new Admin("admin", "admin", "het werkt");
-$easy = new  Easy("kaas");
-$medium = new Medium("water");
-$hard = new Hard("koffie");
+$medium1 = new Medium("water");
+$medium2 = new Medium("toren");
+$medium3 = new Medium("kamer");
+
 
 if (isset($_SESSION['users'])) {
     Account::$users = $_SESSION['users'];
@@ -179,8 +181,7 @@ switch ($action) {
         break;
 
     case "logout":
-
-        if (isset($_SESSION['role']) && isset($_SESSION['user'])){
+         if (isset($_SESSION['role']) && isset($_SESSION['user'])){
             unset($_SESSION['role']);
             unset($_SESSION['user']);
             $template->assign("logoutSucces", "Logged out succesfull");
@@ -189,6 +190,52 @@ switch ($action) {
         }
         $template->display('login.tpl');
         break;
+
+    case "game":
+//        checks if start game button on home page is pressed
+        if (isset($_POST['startGame'])) {
+//            checks if user is signed in
+//           if not user is redirected to login page
+            if (!isset($_SESSION['user'])){
+                $template->assign("loginError", "Please login first");
+                $template->display('login.tpl');
+
+
+            }
+//            if user is signed in game is started
+            else {
+//                checks if a game has already been createrd
+                if (!isset($_SESSION['game'])) {
+                    $game = new Game();
+                    $_SESSION['game'] = $game;
+//                    debug code
+                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaake';
+                }
+                else {
+//                    if hame has been set it will be unset and a new game will be created
+                    unset($_SESSION['game']);
+                    $game = new Game();
+                    $_SESSION['game'] = $game;
+//                    debug code
+                    echo 'er is een bestaande game session dus ik heb hem ge unset en een nieuwe aangemaakt';
+                }
+                echo '<br>';
+//                debug code
+                var_dump($_SESSION['game']);
+//                debug code
+              echo 'game is begonnen';
+              echo '<br>';
+              $template->display('game.tpl');
+
+            }
+
+//         if the button play game is never pressed and people still land on the page this will happen
+        } else {
+            $template->assign("selectDifficultyError", "Something went wrong");
+            $template->display('user.tpl');
+        }
+        break;
+
 }
 
 
