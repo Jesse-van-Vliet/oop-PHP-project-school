@@ -199,17 +199,15 @@ switch ($action) {
             if (!isset($_SESSION['user'])){
                 $template->assign("loginError", "Please login first");
                 $template->display('login.tpl');
-
-
             }
 //            if user is signed in game is started
             else {
-//                checks if a game has already been createrd
+//                checks if a game has already been created
                 if (!isset($_SESSION['game'])) {
                     $game = new Game();
                     $_SESSION['game'] = $game;
 //                    debug code
-                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaake';
+                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
                 }
                 else {
 //                    if hame has been set it will be unset and a new game will be created
