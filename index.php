@@ -278,15 +278,15 @@ switch ($action) {
 
                             // Identify letters in the correct spot and mark them as 2
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
-                                echo "<span style='background-color: green;'>$letter</span>";
+                                echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                 $lettersStatus[$letter] = 2;
                             } else {
                                 // Identify letters in the word but not in the correct spot and mark them as 1
                                 if (mb_strpos($wordToGuess, $letter) !== false) {
-                                    echo "<span style='background-color: yellow;'>$letter</span>";
+                                    echo "<span style='background-color: yellow;font-size: 25px;color: black;'>$letter</span>";
                                     $lettersStatus[$letter] = 1;
                                 } else {
-                                    echo "<span style='background-color: red;'>$letter</span>";
+                                    echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
                                 }
                             }
                         }
@@ -318,12 +318,11 @@ switch ($action) {
 //$_SESSION["users"] = Account::$users;
 //$_SESSION["words"] = Word::$words;
 
-echo "<pre class='mt-5 pt-1'>";
+//echo "<pre class='mt-5 pt-1'>";
 //
 ////debugging
 //var_dump($_SESSION);
 //var_dump(Word::$words);
 //var_dump($_SESSION['game']);
-var_dump($_SESSION);
 //
-echo "</pre>";
+//echo "</pre>";
