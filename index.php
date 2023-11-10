@@ -102,8 +102,6 @@ switch ($action) {
                         $template->display('login.tpl');
                     }
                 }
-
-
             }
         } else {
             $template->assign("loginError", "Please fill in all fields");
@@ -279,6 +277,7 @@ switch ($action) {
                         }
                     }
                     echo "</div>";
+                    echo '<form method="POST" action="/index.php?action=process"> <button type="submit" name="startGame" value="medium"> play again</button></form>';
 //                    echo "<span style='font-size: 25px;color: white;'> $wordToGuess</span>";
                     $template->display('result.tpl');
 
@@ -329,6 +328,7 @@ switch ($action) {
 
                 echo "The  " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word where";
                 echo "<div style='white-space: nowrap;'>";
+
                 if (isset($_SESSION['guessedWords'])){
                     foreach ($_SESSION['guessedWords'] as $guessedWord) {
                         // Display each letter in the guessed word with colors
@@ -354,20 +354,17 @@ switch ($action) {
                         }
                     }
                 }
-
+                echo "</div>";
+                echo '<form method="POST" action="/index.php?action=process"> <button type="submit" name="startGame" value="medium"> play again</button></form>';
                 $template->display('result.tpl');
-            }
 
+            }
             echo $_SESSION['game']->setAttempts($_SESSION['game']->getAttempts() - 1);
         } else {
             $template->assign("selectDifficultyError", "Something went wrong");
             $template->display('user.tpl');
         }
         break;
-
-
-
-
 }
 
 
