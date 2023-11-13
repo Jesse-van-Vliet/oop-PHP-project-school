@@ -26,7 +26,11 @@ if (isset($_SESSION['users'])) {
 if (isset($_SESSION['words'])) {
     Word::$words = $_SESSION['words'];
 }
-
+if (isset($_SESSION['user'])) {
+    $user = $_SESSION['user'];
+} else {
+    $user = null;
+}
 
 
 $template = new Smarty();
@@ -40,13 +44,12 @@ if (isset($_GET['action'])) {
 }
 
 
-
 switch ($action) {
     case "registerForm":
         $template->display('register.tpl');
         break;
 
-        case "register":
+    case "register":
         if (!empty($_POST["username"]) && !empty($_POST['password1']) && !empty($_POST["password2"])) {
             $usernameExists = false;
             foreach (Account::$users as $accountinfo) {
@@ -123,7 +126,7 @@ switch ($action) {
         break;
 
     case "wordForm":
-        if (isset ($_SESSION['role'])){
+        if (isset ($_SESSION['role'])) {
             if ($_SESSION['role'] == "admin") {
                 $template->display('addWords.tpl');
             } else {
@@ -181,7 +184,7 @@ switch ($action) {
         break;
 
     case "logout":
-         if (isset($_SESSION['role']) && isset($_SESSION['user'])){
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
             unset($_SESSION['role']);
             unset($_SESSION['user']);
             $template->assign("logoutSucces", "Logged out succesfull");
@@ -196,11 +199,10 @@ switch ($action) {
         if (isset($_POST['startGame'])) {
 //            checks if user is signed in
 //           if not user is redirected to login page
-            if (!isset($_SESSION['user'])){
+            if (!isset($_SESSION['user'])) {
                 $template->assign("loginError", "Please login first");
                 $template->display('login.tpl');
-            }
-//            if user is signed in game is started
+            } //            if user is signed in game is started
             else {
 //                checks if a game has already been created
                 if (!isset($_SESSION['game'])) {
@@ -209,8 +211,7 @@ switch ($action) {
                     $_SESSION['game'] = $game;
 //                    debug code
                     echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
-                }
-                else {
+                } else {
 //                    if hame has been set it will be unset and a new game will be created
                     unset($_SESSION['game']);
                     $game = new Game();
@@ -221,11 +222,11 @@ switch ($action) {
                 }
                 echo '<br>';
 //                debug code
-                var_dump($_SESSION['game']);
+//                var_dump($_SESSION['game']);
 //                debug code
-              echo 'game is begonnen';
-              echo '<br>';
-              $template->display('game.tpl');
+                echo 'game is begonnen';
+                echo '<br>';
+                $template->display('game.tpl');
 
             }
 
@@ -257,6 +258,7 @@ switch ($action) {
 
             if ($_SESSION['game']->getAttempts() >= 1) {
                 if ($wordToGuess === $userGuess1) {
+                    $user->addStreak();
                     $template->assign("gameSucces", "You guessed the word");
                     $template->display('result.tpl');
                 } else {
@@ -278,15 +280,14 @@ switch ($action) {
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                 $lettersStatus[$letter] = 2;
-                            } else {
+                            } else if (mb_strpos($wordToGuess, $letter) !== false) {
                                 // Identify letters in the word but not in the correct spot and mark them as 1
-                                if (mb_strpos($wordToGuess, $letter) !== false) {
-                                    echo "<span style='background-color: yellow;font-size: 25px;color: black;'>$letter</span>";
-                                    $lettersStatus[$letter] = 1;
-                                } else {
-                                    echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
-                                }
+                                echo "<span style='background-color: yellow;font-size: 25px;color: black;'>$letter</span>";
+                                $lettersStatus[$letter] = 1;
+                            } else {
+                                echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
                             }
+
                         }
                     }
                     echo "</div>";
@@ -310,8 +311,18 @@ switch ($action) {
         }
         break;
 
+    case "scores":
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
+            $template->display('scores.tpl');
+        } else {
+            $template->assign("scores", "You are not allowed to view this page");
+            $template->display('user.tpl');
+        }
+        break;
+
 }
 
+$_SESSION['user'] = $user;
 
 //$_SESSION["users"] = Account::$users;
 //$_SESSION["words"] = Word::$words;
@@ -322,5 +333,5 @@ switch ($action) {
 //var_dump($_SESSION);
 //var_dump(Word::$words);
 //var_dump($_SESSION['game']);
-//
+//var_dump($_SESSION['user']);
 //echo "</pre>";
