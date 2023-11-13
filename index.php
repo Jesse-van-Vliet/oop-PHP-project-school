@@ -187,12 +187,13 @@ switch ($action) {
         if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
             unset($_SESSION['role']);
             unset($_SESSION['user']);
-            $template->assign("logoutSucces", "Logged out succesfull");
+            $user = null;
+            $template->assign("logoutSucces", "Logged out successfully");
         } else {
             $template->assign("logoutError", "Something went wrong");
         }
         $template->display('login.tpl');
-        break;
+        break; // Move this break statement to the end of the switch block
 
     case "process":
 //        checks if start game button on home page is pressed
@@ -328,10 +329,10 @@ $_SESSION['user'] = $user;
 //$_SESSION["words"] = Word::$words;
 
 //echo "<pre class='mt-5 pt-1'>";
-//
+echo '<pre>';
 ////debugging
-//var_dump($_SESSION);
+var_dump($_SESSION);
 //var_dump(Word::$words);
 //var_dump($_SESSION['game']);
 //var_dump($_SESSION['user']);
-//echo "</pre>";
+echo "</pre>";
