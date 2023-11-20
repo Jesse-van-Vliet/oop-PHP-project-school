@@ -46,7 +46,7 @@ switch ($action) {
         $template->display('register.tpl');
         break;
 
-        case "register":
+    case "register":
         if (!empty($_POST["username"]) && !empty($_POST['password1']) && !empty($_POST["password2"])) {
             $usernameExists = false;
             foreach (Account::$users as $accountinfo) {
@@ -102,8 +102,6 @@ switch ($action) {
                         $template->display('login.tpl');
                     }
                 }
-
-
             }
         } else {
             $template->assign("loginError", "Please fill in all fields");
@@ -123,7 +121,7 @@ switch ($action) {
         break;
 
     case "wordForm":
-        if (isset ($_SESSION['role'])){
+        if (isset ($_SESSION['role'])) {
             if ($_SESSION['role'] == "admin") {
                 $template->display('addWords.tpl');
             } else {
@@ -181,7 +179,7 @@ switch ($action) {
         break;
 
     case "logout":
-         if (isset($_SESSION['role']) && isset($_SESSION['user'])){
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
             unset($_SESSION['role']);
             unset($_SESSION['user']);
             $template->assign("logoutSucces", "Logged out succesfull");
@@ -196,39 +194,34 @@ switch ($action) {
         if (isset($_POST['startGame'])) {
 //            checks if user is signed in
 //           if not user is redirected to login page
-            if (!isset($_SESSION['user'])){
+            if (!isset($_SESSION['user'])) {
                 $template->assign("loginError", "Please login first");
                 $template->display('login.tpl');
-
-
-            }
-//            if user is signed in game is started
+            } //            if user is signed in game is started
             else {
-//                checks if a game has already been createrd
+//                checks if a game has already been created
                 if (!isset($_SESSION['game'])) {
                     $game = new Game();
 
                     $_SESSION['game'] = $game;
 //                    debug code
-                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaake';
-                }
-                else {
+//                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
+                } else {
 //                    if hame has been set it will be unset and a new game will be created
                     unset($_SESSION['game']);
                     $game = new Game();
                     $_SESSION['game'] = $game;
 //                    debug code
-                    echo 'er is een bestaande game session dus ik heb hem ge unset en een nieuwe aangemaakt';
+//                    echo 'er is een bestaande game session dus ik heb hem ge unset en een nieuwe aangemaakt';
                     unset($_SESSION['guessedWords']);
                 }
                 echo '<br>';
 //                debug code
-                var_dump($_SESSION['game']);
+//                var_dump($_SESSION['game']);
 //                debug code
-              echo 'game is begonnen';
-              echo '<br>';
-              $template->display('game.tpl');
-
+//              echo 'game is begonnen';
+                echo '<br>';
+                $template->display('game.tpl');
             }
 
 //         if the button play game is never pressed and people still land on the page this will happen
@@ -244,23 +237,50 @@ switch ($action) {
                 $_SESSION['guessedWords'] = array();  // Initialize an array to store guessed words
                 $_SESSION['gameStarted'] = true;  // Mark the game session as started
             }
-
             $wordToGuess = $_SESSION['game']->getWordToGuess()->getName();
             $userGuess1 = $_POST['answer'];
-
 // Store the user's input in a separate variable for display
             $displayedGuess = $userGuess1;
-
             $template->assign("game", $_SESSION['game']);
             echo "<br>";
             echo "<br>";
             echo "<br>";
             echo "<br>";
-
-            if ($_SESSION['game']->getAttempts() >= 1) {
+            if ($_SESSION['game']->getAttempts() > 1) {
                 if ($wordToGuess === $userGuess1) {
                     $template->assign("gameSucces", "You guessed the word");
+                    $action = "result";
+                    $_SESSION['game']->setUsedAttempts(7 - $_SESSION['game']->getAttempts());
+                    $_SESSION['guessedWords'][] = $userGuess1;
+                    echo "It took you " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word";
+                    echo "<div style='white-space: nowrap;'>";
+                    foreach ($_SESSION['guessedWords'] as $guessedWord) {
+                        // Display each letter in the guessed word with colors
+                        $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
+                        echo "<br>";
+                        // Display each letter in the guessed word with colors
+                        for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
+                            $letter = mb_substr($guessedWord, $i, 1);
+                            // Identify letters in the correct spot and mark them as 2
+                            if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
+                                echo "<span style='font-size: 25px;color: white;'>$letter</span>";
+                                $lettersStatus[$letter] = 2;
+                            } else {
+                                // Identify letters in the word but not in the correct spot and mark them as 1
+                                if (mb_strpos($wordToGuess, $letter) !== false) {
+                                    echo "<span style='font-size: 25px; color: white;'>$letter</span>";
+                                    $lettersStatus[$letter] = 1;
+                                } else {
+                                    echo "<span style='font-size: 25px;color: white;'>$letter</span>";
+                                }
+                            }
+                        }
+                    }
+                    echo "</div>";
+                    echo '<form method="POST" action="/index.php?action=process"> <button type="submit" name="startGame" value="medium"> play again</button></form>';
+//                    echo "<span style='font-size: 25px;color: white;'> $wordToGuess</span>";
                     $template->display('result.tpl');
+
                 } else {
                     // Save the current guess to the guessed words session variable
                     $_SESSION['guessedWords'][] = $userGuess1;
@@ -301,17 +321,50 @@ switch ($action) {
                     $template->display('game.tpl');
                 }
             } else {
-                $template->assign("gameError", "You have no attempts left");
-                $template->display('game.tpl');
-            }
+                $_SESSION['guessedWords'][] = $userGuess1;
 
+                $template->assign("gameError", "You have no attempts left, you lost the game");
+                $_SESSION['game']->setUsedAttempts(7 - $_SESSION['game']->getAttempts());
+
+                echo "The  " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word where";
+                echo "<div style='white-space: nowrap;'>";
+
+                if (isset($_SESSION['guessedWords'])){
+                    foreach ($_SESSION['guessedWords'] as $guessedWord) {
+                        // Display each letter in the guessed word with colors
+                        $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
+                        echo "<br>";
+                        // Display each letter in the guessed word with colors
+                        for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
+                            $letter = mb_substr($guessedWord, $i, 1);
+
+                            // Identify letters in the correct spot and mark them as 2
+                            if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
+                                echo "<span style='font-size: 25px;color: white;'>$letter</span>";
+                                $lettersStatus[$letter] = 2;
+                            } else {
+                                // Identify letters in the word but not in the correct spot and mark them as 1
+                                if (mb_strpos($wordToGuess, $letter) !== false) {
+                                    echo "<span style='font-size: 25px; color: white;'>$letter</span>";
+                                    $lettersStatus[$letter] = 1;
+                                } else {
+                                    echo "<span style='font-size: 25px;color: white;'>$letter</span>";
+                                }
+                            }
+                        }
+                    }
+                }
+                echo "</div>";
+                echo '<form method="POST" action="/index.php?action=process"> <button type="submit" name="startGame" value="medium"> play again</button></form>';
+                $template->display('result.tpl');
+
+            }
             echo $_SESSION['game']->setAttempts($_SESSION['game']->getAttempts() - 1);
         } else {
             $template->assign("selectDifficultyError", "Something went wrong");
             $template->display('user.tpl');
         }
         break;
-
 }
 
 
@@ -323,6 +376,6 @@ switch ($action) {
 ////debugging
 //var_dump($_SESSION);
 //var_dump(Word::$words);
-//var_dump($_SESSION['game']);
+var_dump($_SESSION['game']);
 //
-//echo "</pre>";
+echo "</pre>";
