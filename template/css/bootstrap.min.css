@@ -13462,3 +13462,13 @@ textarea.form-control-lg {
 }
 
 /*# sourceMappingURL=bootstrap.min.css.map */
+
+.correct {
+    background-color: green;
+}
+.incorrect {
+    background-color: red;
+}
+.not-in-word {
+    background-color: yellow;
+}
