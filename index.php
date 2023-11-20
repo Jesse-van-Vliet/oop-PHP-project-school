@@ -26,7 +26,11 @@ if (isset($_SESSION['users'])) {
 if (isset($_SESSION['words'])) {
     Word::$words = $_SESSION['words'];
 }
-
+if (isset($_SESSION['user'])) {
+    $user = $_SESSION['user'];
+} else {
+    $user = null;
+}
 
 
 $template = new Smarty();
@@ -38,7 +42,6 @@ if (isset($_GET['action'])) {
 } else {
     $action = null;
 }
-
 
 
 switch ($action) {
@@ -182,12 +185,13 @@ switch ($action) {
         if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
             unset($_SESSION['role']);
             unset($_SESSION['user']);
-            $template->assign("logoutSucces", "Logged out succesfull");
+            $user = null;
+            $template->assign("logoutSucces", "Logged out successfully");
         } else {
             $template->assign("logoutError", "Something went wrong");
         }
         $template->display('login.tpl');
-        break;
+        break; // Move this break statement to the end of the switch block
 
     case "process":
 //        checks if start game button on home page is pressed
@@ -205,7 +209,7 @@ switch ($action) {
 
                     $_SESSION['game'] = $game;
 //                    debug code
-//                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
+                    echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
                 } else {
 //                    if hame has been set it will be unset and a new game will be created
                     unset($_SESSION['game']);
@@ -219,9 +223,10 @@ switch ($action) {
 //                debug code
 //                var_dump($_SESSION['game']);
 //                debug code
-//              echo 'game is begonnen';
+                echo 'game is begonnen';
                 echo '<br>';
                 $template->display('game.tpl');
+
             }
 
 //         if the button play game is never pressed and people still land on the page this will happen
@@ -248,6 +253,7 @@ switch ($action) {
             echo "<br>";
             if ($_SESSION['game']->getAttempts() > 1) {
                 if ($wordToGuess === $userGuess1) {
+                    $user->addStreak();
                     $template->assign("gameSucces", "You guessed the word");
                     $action = "result";
                     $_SESSION['game']->setUsedAttempts(7 - $_SESSION['game']->getAttempts());
@@ -300,15 +306,14 @@ switch ($action) {
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                 $lettersStatus[$letter] = 2;
-                            } else {
+                            } else if (mb_strpos($wordToGuess, $letter) !== false) {
                                 // Identify letters in the word but not in the correct spot and mark them as 1
-                                if (mb_strpos($wordToGuess, $letter) !== false) {
-                                    echo "<span style='background-color: yellow;font-size: 25px;color: black;'>$letter</span>";
-                                    $lettersStatus[$letter] = 1;
-                                } else {
-                                    echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
-                                }
+                                echo "<span style='background-color: yellow;font-size: 25px;color: black;'>$letter</span>";
+                                $lettersStatus[$letter] = 1;
+                            } else {
+                                echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
                             }
+
                         }
                     }
                     echo "</div>";
@@ -365,17 +370,28 @@ switch ($action) {
             $template->display('user.tpl');
         }
         break;
+
+    case "scores":
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
+            $template->display('scores.tpl');
+        } else {
+            $template->assign("scores", "You are not allowed to view this page");
+            $template->display('user.tpl');
+        }
+        break;
+
 }
 
+$_SESSION['user'] = $user;
 
 //$_SESSION["users"] = Account::$users;
 //$_SESSION["words"] = Word::$words;
 
 //echo "<pre class='mt-5 pt-1'>";
-//
+echo '<pre>';
 ////debugging
-//var_dump($_SESSION);
+var_dump($_SESSION);
 //var_dump(Word::$words);
-var_dump($_SESSION['game']);
-//
+//var_dump($_SESSION['game']);
+//var_dump($_SESSION['user']);
 echo "</pre>";

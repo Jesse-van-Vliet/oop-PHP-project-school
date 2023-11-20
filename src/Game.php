@@ -28,7 +28,7 @@ class Game
      * @return Easy|Hard|Medium
      */
 
-    public function getWordToGuess()
+    public function getWordToGuess(): Easy|Hard|Medium
     {
         return $this->wordToGuess;
     }
