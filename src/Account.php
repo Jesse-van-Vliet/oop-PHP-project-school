@@ -20,7 +20,6 @@ abstract class Account
         self::$users[] = $this;
 
     }
-
     /**
      * @return string
      */
@@ -84,6 +83,7 @@ abstract class Account
     public function clearStreak(): void {
         $this->Streak = 0;
     }
+
 
 
 }

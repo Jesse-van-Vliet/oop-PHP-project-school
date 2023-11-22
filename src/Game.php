@@ -7,8 +7,8 @@ class Game
     private Easy|Medium|Hard $wordToGuess;
     private int $attempts;
     private int $usedAttempts;
-
-   public function __construct( Easy|Medium|Hard $wordToGuess = null, int $attempts = 6, int $usedAttempts = 0)
+    private bool $completed = false;
+   public function __construct( Easy|Medium|Hard $wordToGuess = null, int $attempts = 6, int $usedAttempts = 0, bool $completed = false)
    {
        $this->attempts = $attempts;
        $this->usedAttempts = $usedAttempts;
@@ -16,6 +16,7 @@ class Game
            $wordToGuess = self::randomWord();
        }
        $this->wordToGuess = $wordToGuess;
+       $this->completed = $completed;
    }
 
     public static function randomWord(): word
@@ -67,6 +68,16 @@ class Game
     public function setUsedAttempts(int $usedAttempts): void
     {
         $this->usedAttempts = $usedAttempts;
+    }
+
+    public function getCompleted(): bool
+    {
+        return $this->completed;
+    }
+
+    public function completedGame(): void
+    {
+        $this->completed = true;
     }
 
 
