@@ -87,7 +87,7 @@ switch ($action) {
             foreach (Account::$users as $accountinfo) {
                 if ($accountinfo->getName() === $_POST["username"]) {
                     $usernameExists = true;
-                    $user = $accountinfo->getName();
+                    $user = $accountinfo;
                     if (password_verify($_POST["password1"], $accountinfo->getPassword())) {
                         $_SESSION['user'] = $user;
                         if ($accountinfo instanceof Admin) {

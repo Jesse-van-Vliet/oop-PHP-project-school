@@ -7,7 +7,7 @@
 
             <h1>logout</h1>
             <div class="mb-3">
-                <p class="p-0 m-0">Logged in as: {$smarty.session.user} </p>
+                <p class="p-0 m-0">Logged in as: {$smarty.session.user->getName()} </p>
             </div>
            <button type="submit" class="btn btn-primary">Logout</button>
             <a class="btn" href="/index.php?action=dashboard">Stay signed in</a>

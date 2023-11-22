@@ -11,7 +11,7 @@
 
     <h1>Account information</h1>
     <div class="p-0 m-0 d-flex d-flex-row w-25 justify-content-around m-5">
-        <p class="p-0 m-0">Username: {$smarty.session.user} </p>
+        <p class="p-0 m-0">Username: {$smarty.session.user->getName(  )} </p>
         <p class="p-0 m-0">Role: {$smarty.session.role} </p>
     </div>
         <a class="btn btn-primary" href="/index.php?action=logoutForm">Logout</a>
