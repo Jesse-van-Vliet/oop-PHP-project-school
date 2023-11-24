@@ -75,9 +75,9 @@ class Game
         return $this->completed;
     }
 
-    public function completedGame(): void
+    public function gameCompleted(): bool
     {
-        $this->completed = true;
+        return $this->completed = True;
     }
 
 

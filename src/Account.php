@@ -36,10 +36,6 @@ abstract class Account
         return $this->password;
     }
 
-    public function addGame($gameName, $score): void {
-        // Voeg een nieuw spel toe aan de lijst van games
-        $this->games[$gameName] = $score;
-    }
 
     public function addWin(): void {
         // Voeg een nieuw spel toe aan de lijst van games
@@ -63,14 +59,7 @@ abstract class Account
         }
     }
 
-    public function getGameScore($gameName): string {
-        // Haal de score op van een specifiek spel
-        if (isset($this->games[$gameName])) {
-            return $this->games[$gameName];
-        } else {
-            return "Spel niet gevonden";
-        }
-    }
+
 
     public function getWonGames(): int {
         return $this->wonGames;
@@ -83,6 +72,13 @@ abstract class Account
     public function clearStreak(): void {
         $this->Streak = 0;
     }
+
+   public function addGame(): Game
+   {
+        $this->games[] = Game::$game;
+    }
+
+
 
 
 

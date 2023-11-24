@@ -32,6 +32,12 @@ if (isset($_SESSION['user'])) {
     $user = null;
 }
 
+if (isset($_SESSION['game'])) {
+    $game = $_SESSION['game'];
+} else {
+    $game = null;
+}
+
 
 $template = new Smarty();
 $template->setTemplateDir('template');
@@ -206,14 +212,12 @@ switch ($action) {
 //                checks if a game has already been created
                 if (!isset($_SESSION['game'])) {
                     $game = new Game();
-                    $_SESSION['game'] = $game;
 //                    debug code
                     echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
                 } else {
 //                    if hame has been set it will be unset and a new game will be created
                     unset($_SESSION['game']);
                     $game = new Game();
-                    $_SESSION['game'] = $game;
 //                    debug code
 //                    echo 'er is een bestaande game session dus ik heb hem ge unset en een nieuwe aangemaakt';
                     unset($_SESSION['guessedWords']);
@@ -241,7 +245,7 @@ switch ($action) {
                 $_SESSION['guessedWords'] = array();  // Initialize an array to store guessed words
                 $_SESSION['gameStarted'] = true;  // Mark the game session as started
             }
-            $wordToGuess = $_SESSION['game']->getWordToGuess()->getName();
+            $wordToGuess = $game->getWordToGuess()->getName();
             $userGuess1 = $_POST['answer'];
 // Store the user's input in a separate variable for display
             $displayedGuess = $userGuess1;
@@ -250,17 +254,19 @@ switch ($action) {
             echo "<br>";
             echo "<br>";
             echo "<br>";
-            if ($_SESSION['game']->getAttempts() > 1) {
+            if ($game->getAttempts() > 1) {
 //               Guessed the word
                 if ($wordToGuess === $userGuess1) {
                     $user->addStreak();
                     $user->addWin();
                     $user->addLongestStreak();
+                    $game->gameCompleted();
+//                    $user->addGame();
                     $template->assign("gameSucces", "You guessed the word");
                     $action = "result";
-                    $_SESSION['game']->setUsedAttempts(7 - $_SESSION['game']->getAttempts());
+                    $game->setUsedAttempts(7 - $game->getAttempts());
                     $_SESSION['guessedWords'][] = $userGuess1;
-                    echo "It took you " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word";
+                    echo "It took you " . $game->getUsedAttempts() . " attempts to guess the word";
                     echo "<div style='white-space: nowrap;'>";
                     foreach ($_SESSION['guessedWords'] as $guessedWord) {
                         // Display each letter in the guessed word with colors
@@ -331,7 +337,7 @@ switch ($action) {
                 $user->addLost();
 //                $user->addGame();
                 $template->assign("gameError", "You have no attempts left, you lost the game");
-                $_SESSION['game']->setUsedAttempts(7 - $_SESSION['game']->getAttempts());
+                $game->setUsedAttempts(7 - $game->getAttempts());
                 echo "The  " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word where";
                 echo "<div style='white-space: nowrap;'>";
 
@@ -365,7 +371,7 @@ switch ($action) {
                 $template->display('result.tpl');
 
             }
-            echo $_SESSION['game']->setAttempts($_SESSION['game']->getAttempts() - 1);
+            echo $game->setAttempts($game->getAttempts() - 1);
         } else {
             $template->assign("selectDifficultyError", "Something went wrong");
             $template->display('user.tpl');
@@ -384,6 +390,7 @@ switch ($action) {
 }
 
 $_SESSION['user'] = $user;
+$_SESSION['game'] = $game;
 //$_SESSION["users"] = Account::$users;
 //$_SESSION["words"] = Word::$words;
 //echo "<pre class='mt-5 pt-1'>";
