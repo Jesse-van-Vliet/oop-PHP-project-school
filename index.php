@@ -14,7 +14,7 @@ use Oopproj\Game;
 
 
 session_start();
-$admin = new Admin("admin", "admin", "het werkt");
+$admin = new Admin("admin", "admin");
 $medium1 = new Medium("water");
 $medium2 = new Medium("toren");
 $medium3 = new Medium("kamer");
@@ -51,9 +51,11 @@ if (isset($_GET['action'])) {
 
 
 switch ($action) {
+
     case "registerForm":
         $template->display('register.tpl');
         break;
+
 
     case "register":
         if (!empty($_POST["username"]) && !empty($_POST['password1']) && !empty($_POST["password2"])) {
@@ -69,7 +71,7 @@ switch ($action) {
                 $template->display("register.tpl");
             } elseif ($_POST['password1'] === $_POST['password2']) {
                 // If the username doesn't exist, and passwords match, add the user
-                $user = new User($_POST['username'], $_POST['password1']);
+                $users = new User($_POST['username'], $_POST['password1']);
                 $template->assign("registerSucces", "Your account has been created, you can now login");
                 $template->display("login.tpl");
             } else {
@@ -82,8 +84,13 @@ switch ($action) {
         }
         break;
 
-
+//redirect to login
     case "loginForm":
+        if (isset($_SESSION['user'])) {
+            $template->assign("loginError", "You are already logged in");
+            $template->display('user.tpl');
+            break;
+        }
         $template->display('login.tpl');
         break;
 
@@ -215,7 +222,7 @@ switch ($action) {
 //                    debug code
                     echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
                 } else {
-//                    if hame has been set it will be unset and a new game will be created
+//                    if game has been set it will be unset and a new game will be created
                     unset($_SESSION['game']);
                     $game = new Game();
 //                    debug code
@@ -257,15 +264,18 @@ switch ($action) {
             if ($game->getAttempts() > 1) {
 //               Guessed the word
                 if ($wordToGuess === $userGuess1) {
+                    $game->setGameWon();
+                    $user->addGame($game);
                     $user->addStreak();
                     $user->addWin();
                     $user->addLongestStreak();
-                    $game->gameCompleted();
+
 //                    $user->addGame();
                     $template->assign("gameSucces", "You guessed the word");
                     $action = "result";
                     $game->setUsedAttempts(7 - $game->getAttempts());
                     $_SESSION['guessedWords'][] = $userGuess1;
+                    $game->addGuessedWord($userGuess1);
                     echo "It took you " . $game->getUsedAttempts() . " attempts to guess the word";
                     echo "<div style='white-space: nowrap;'>";
                     foreach ($_SESSION['guessedWords'] as $guessedWord) {
@@ -299,6 +309,8 @@ switch ($action) {
 //                    wrong answer section but attempts are still left
                     // Save the current guess to the guessed words session variable
                     $_SESSION['guessedWords'][] = $userGuess1;
+                    $game->addGuessedWord($userGuess1);
+
 
                     // Display all guessed words from the session
                     echo "<div style='white-space: nowrap;'>";
@@ -332,10 +344,11 @@ switch ($action) {
 //                you lost the game section
             } else {
                 $_SESSION['guessedWords'][] = $userGuess1;
+                $game->addGuessedWord($userGuess1);
 //                clears streak
                 $user->clearStreak();
                 $user->addLost();
-//                $user->addGame();
+                $user->addGame($game);
                 $template->assign("gameError", "You have no attempts left, you lost the game");
                 $game->setUsedAttempts(7 - $game->getAttempts());
                 echo "The  " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word where";
@@ -388,16 +401,15 @@ switch ($action) {
         break;
 
 }
-
 $_SESSION['user'] = $user;
 $_SESSION['game'] = $game;
-//$_SESSION["users"] = Account::$users;
-//$_SESSION["words"] = Word::$words;
+$_SESSION["users"] = Account::$users;
+$_SESSION["words"] = Word::$words;
 //echo "<pre class='mt-5 pt-1'>";
-echo '<pre>';
-////debugging
-var_dump($_SESSION);
-//var_dump(Word::$words);
-//var_dump($_SESSION['game']);
-//var_dump($_SESSION['user']);
-echo "</pre>";
+//echo '<pre>';
+//////debugging
+//var_dump($_SESSION);
+////var_dump(Word::$words);
+////var_dump($_SESSION['game']);
+////var_dump($_SESSION['user']);
+//echo "</pre>";

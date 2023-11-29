@@ -20,6 +20,7 @@ abstract class Account
         self::$users[] = $this;
 
     }
+
     /**
      * @return string
      */
@@ -37,22 +38,26 @@ abstract class Account
     }
 
 
-    public function addWin(): void {
+    public function addWin(): void
+    {
         // Voeg een nieuw spel toe aan de lijst van games
         $this->wonGames++;
     }
 
-    public function addLost(): void {
+    public function addLost(): void
+    {
         // Voeg een nieuw spel toe aan de lijst van games
         $this->lostGames++;
     }
 
-    public function addStreak(): void {
+    public function addStreak(): void
+    {
         // Voeg een nieuw spel toe aan de lijst van games
         $this->Streak++;
     }
 
-    public function addLongestStreak(): void {
+    public function addLongestStreak(): void
+    {
         // Voeg een nieuw spel toe aan de lijst van games
         if ($this->Streak > $this->longestStreak) {
             $this->longestStreak = $this->Streak;
@@ -60,24 +65,46 @@ abstract class Account
     }
 
 
-
-    public function getWonGames(): int {
+    public function getWonGames(): int
+    {
         return $this->wonGames;
     }
 
-    public function getLongestStreak(): int {
+    public function getLongestStreak(): int
+    {
         return $this->longestStreak;
     }
 
-    public function clearStreak(): void {
+    public function clearStreak(): void
+    {
         $this->Streak = 0;
     }
 
-   public function addGame(): Game
-   {
-        $this->games[] = Game::$game;
+    public function addGame(Game $game): void
+    {
+        // Voeg een nieuw spel toe aan de lijst van games
+        $this->games[] = $game;
     }
 
+    /**
+     * @return int
+     */
+    public function getStreak(): int
+    {
+        return $this->Streak;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLostGames(): int
+    {
+        return $this->lostGames;
+    }
+
+    /**
+     * @return array
+     */
 
 
 

@@ -7,8 +7,10 @@ class Game
     private Easy|Medium|Hard $wordToGuess;
     private int $attempts;
     private int $usedAttempts;
-    private bool $completed = false;
-   public function __construct( Easy|Medium|Hard $wordToGuess = null, int $attempts = 6, int $usedAttempts = 0, bool $completed = false)
+    private array $guessedWords = [];
+    private bool $gameWon;
+
+   public function __construct( Easy|Medium|Hard $wordToGuess = null, int $attempts = 6, int $usedAttempts = 0, bool $gameWon = false)
    {
        $this->attempts = $attempts;
        $this->usedAttempts = $usedAttempts;
@@ -16,7 +18,7 @@ class Game
            $wordToGuess = self::randomWord();
        }
        $this->wordToGuess = $wordToGuess;
-       $this->completed = $completed;
+       $this->gameWon = $gameWon;
    }
 
     public static function randomWord(): word
@@ -75,10 +77,18 @@ class Game
         return $this->completed;
     }
 
-    public function gameCompleted(): bool
+
+    public function addGuessedWord(string $guessedWord): void
     {
-        return $this->completed = True;
+        $this->guessedWords[] = $guessedWord;
     }
+
+    public function setGameWon(): void
+    {
+        $this->gameWon = true;
+    }
+
+
 
 
 

@@ -17,7 +17,7 @@
     <form method="POST" action="/index.php?action=addWord">
         <div>
             <label for="word">Word</label>
-            <input type="text" name="word" id="word">
+            <input type="text" name="word" id="word" minlength="5" maxlength="5" required pattern="[A-Za-z0-9]+">
             <input type="submit" name="add" value="Add">
         </div>
     </form>
