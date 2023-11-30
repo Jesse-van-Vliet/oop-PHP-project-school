@@ -167,12 +167,6 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/index.php">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
                     {if isset($smarty.session.role)}
                         {if $smarty.session.role == 'admin'}
                             <li class="nav-item">
@@ -182,7 +176,7 @@
                     {/if}
                 </ul>
                 {if isset($smarty.session.user)}
-                    <a class="nav-link m-2" href="/index.php?action=dashboard">{$smarty.session.user}</a>
+                    <a class="nav-link m-2" href="/index.php?action=dashboard">{$smarty.session.user->getName()}</a>
                     <a class="nav-link" href="/index.php?action=logoutForm">Logout</a>
                 {/if}
                 {if !isset($smarty.session.user)}
