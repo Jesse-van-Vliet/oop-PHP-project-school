@@ -102,11 +102,20 @@ abstract class Account
         return $this->lostGames;
     }
 
+    public static function register(string $name, string $password): void
+    {
+        $table = "account";
+        $params = [
+            "name" => $name,
+            "password" => $password,
+            "adminstatus_id" => 1
+        ];
+        Db::$db->insert($table, $params);
+    }
+
     /**
      * @return array
      */
-
-
 
 
 }

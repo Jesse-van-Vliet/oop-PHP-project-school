@@ -5,6 +5,7 @@ require_once 'vendor/autoload.php';
 
 use Oopproj\Admin;
 use Oopproj\Account;
+use Oopproj\Db;
 use Oopproj\User;
 use Oopproj\Word;
 use Oopproj\Medium;
@@ -14,6 +15,10 @@ use Oopproj\Game;
 
 
 session_start();
+
+$db = new Db();
+
+
 $admin = new Admin("admin", "admin");
 $medium1 = new Medium("water");
 $medium2 = new Medium("toren");
@@ -71,7 +76,8 @@ switch ($action) {
                 $template->display("register.tpl");
             } elseif ($_POST['password1'] === $_POST['password2']) {
                 // If the username doesn't exist, and passwords match, add the user
-                $users = new User($_POST['username'], $_POST['password1']);
+//                $users = new User($_POST['username'], $_POST['password1']);
+                User::register($_POST['username'], password_hash($_POST['password1'], PASSWORD_BCRYPT));
                 $template->assign("registerSucces", "Your account has been created, you can now login");
                 $template->display("login.tpl");
             } else {
