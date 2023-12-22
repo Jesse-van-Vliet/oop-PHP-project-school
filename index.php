@@ -18,11 +18,7 @@ session_start();
 
 $db = new Db();
 
-
-$admin = new Admin("admin", "admin");
-$medium1 = new Medium("water");
-$medium2 = new Medium("toren");
-$medium3 = new Medium("kamer");
+$_SESSION['role'] = "admin";
 
 
 if (isset($_SESSION['users'])) {
@@ -66,7 +62,7 @@ switch ($action) {
         if (!empty($_POST["username"]) && !empty($_POST['password1']) && !empty($_POST["password2"])) {
             $usernameExists = false;
             foreach (Account::$users as $accountinfo) {
-                if ($accountinfo->getName() === $_POST["username"]) {
+                if (Account::nameExists($_POST["username"]) == true) {
                     $usernameExists = true;
                     break;
                 }
@@ -158,24 +154,19 @@ switch ($action) {
 
     case "addWord":
         if (!empty($_POST['word'])) {
-            $wordExists = false;
             if (strlen($_POST['word']) === 5) {
-                foreach (Word::$words as $word) {
-                    if ($word->getName() === $_POST['word']) {
-                        $wordExists = true;
-                        break;
-                    }
-                }
-                if ($wordExists) {
+                if (Word::difference($_POST['word'])) {
                     $template->assign("wordError", value: $_POST['word'] . " already exists");
                 } else {
-                    new Medium($_POST['word']);
                     $template->assign("wordSucces", value: $_POST['word'] . " has been added");
+                    Word::addWord($_POST['word']);
                 }
+
             } else {
                 $template->assign("wordError", "Word must be 5 characters long");
             }
             $template->display('addWords.tpl');
+            break;
         } else {
             $template->assign("wordError", "Please fill in the field");
         }
@@ -260,7 +251,7 @@ switch ($action) {
             }
             $wordToGuess = $game->getWordToGuess()->getName();
             $userGuess1 = $_POST['answer'];
-// Store the user's input in a separate variable for display
+//              Store the user's input in a separate variable for display
             $displayedGuess = $userGuess1;
             $template->assign("game", $_SESSION['game']);
             echo "<br>";
@@ -285,18 +276,18 @@ switch ($action) {
                     echo "It took you " . $game->getUsedAttempts() . " attempts to guess the word";
                     echo "<div style='white-space: nowrap;'>";
                     foreach ($_SESSION['guessedWords'] as $guessedWord) {
-                        // Display each letter in the guessed word with colors
+//                  Display each letter in the guessed word with colors
                         $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                         echo "<br>";
-                        // Display each letter in the guessed word with colors
+//                      Display each letter in the guessed word with colors
                         for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                             $letter = mb_substr($guessedWord, $i, 1);
-                            // Identify letters in the correct spot and mark them as 2
+//                          Identify letters in the correct spot and mark them as 2
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 echo "<span style='font-size: 25px;color: white;'>$letter</span>";
                                 $lettersStatus[$letter] = 2;
                             } else {
-                                // Identify letters in the word but not in the correct spot and mark them as 1
+//                              Identify letters in the word but not in the correct spot and mark them as 1
                                 if (mb_strpos($wordToGuess, $letter) !== false) {
                                     echo "<span style='font-size: 25px; color: white;'>$letter</span>";
                                     $lettersStatus[$letter] = 1;
@@ -318,17 +309,17 @@ switch ($action) {
                     $game->addGuessedWord($userGuess1);
 
 
-                    // Display all guessed words from the session
+//                  Display all guessed words from the session
                     echo "<div style='white-space: nowrap;'>";
                     foreach ($_SESSION['guessedWords'] as $guessedWord) {
-                        // Display each letter in the guessed word with colors
+//                      Display each letter in the guessed word with colors
                         $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                         echo "<br>";
-                        // Display each letter in the guessed word with colors
+//                      Display each letter in the guessed word with colors
                         for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                             $letter = mb_substr($guessedWord, $i, 1);
 
-                            // Identify letters in the correct spot and mark them as 2
+//                          Identify letters in the correct spot and mark them as 2
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                 $lettersStatus[$letter] = 2;
@@ -343,7 +334,7 @@ switch ($action) {
                     }
                     echo "</div>";
                     $template->assign("gameError", "Wrong answer");
-                    // Use the $displayedGuess variable for displaying the user's input
+//                  Use the $displayedGuess variable for displaying the user's input
                     $template->assign("userGuess", $displayedGuess);
                     $template->display('game.tpl');
                 }
@@ -362,19 +353,19 @@ switch ($action) {
 
                 if (isset($_SESSION['guessedWords'])){
                     foreach ($_SESSION['guessedWords'] as $guessedWord) {
-                        // Display each letter in the guessed word with colors
+//                      Display each letter in the guessed word with colors
                         $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                         echo "<br>";
-                        // Display each letter in the guessed word with colors
+//                      Display each letter in the guessed word with colors
                         for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                             $letter = mb_substr($guessedWord, $i, 1);
 
-                            // Identify letters in the correct spot and mark them as 2
+//                          Identify letters in the correct spot and mark them as 2
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 echo "<span style='font-size: 25px;color: white;'>$letter</span>";
                                 $lettersStatus[$letter] = 2;
                             } else {
-                                // Identify letters in the word but not in the correct spot and mark them as 1
+//                              Identify letters in the word but not in the correct spot and mark them as 1
                                 if (mb_strpos($wordToGuess, $letter) !== false) {
                                     echo "<span style='font-size: 25px; color: white;'>$letter</span>";
                                     $lettersStatus[$letter] = 1;

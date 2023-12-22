@@ -8,5 +8,5 @@ interface Database
     public function insert(string $table, array $params = []);
     public function update();
     public function delete();
-    public function select();
+    public function select(array $columns, array $params = []);
 }

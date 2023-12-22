@@ -108,10 +108,29 @@ abstract class Account
         $params = [
             "name" => $name,
             "password" => $password,
-            "adminstatus_id" => 1
+            "adminstatus_id" => 2
         ];
         Db::$db->insert($table, $params);
     }
+
+    public static function nameExists(string $name): bool
+    {
+        $columns = [
+            "account" => [
+                "name"
+            ]
+        ];
+        $params = [
+            "name" => $name
+        ];
+        $result = Db::$db->select($columns, $params);
+        if (empty($result)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     /**
      * @return array

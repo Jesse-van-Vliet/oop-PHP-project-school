@@ -17,15 +17,33 @@ abstract class Word
     /**
      * @return string
      */
-    public function getName(): string
+    public static function difference(string $word)
     {
-        return $this->name;
+        $columns = [
+            "words" => [
+                "name"
+            ]
+        ];
+        $params = [
+            "name" => $word
+        ];
+        $result = Db::$db->select($columns, $params);
+        return $result;
     }
 
     public function getRandomWord(): string
     {
         $randomWord = self::$words[array_rand(self::$words)];
         return $randomWord->getName();
+    }
+
+    public static function addWord($word): void
+    {
+        $table = "words";
+        $params = [
+            "name" => $word
+        ];
+        Db::$db->insert($table, $params);
     }
 
 
