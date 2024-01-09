@@ -12,7 +12,7 @@
     <h1>Account information</h1>
     <div class="p-0 m-0 d-flex flex-md-column w-25 justify-content-around m-5">
         <p class="p-0 m-0">Username: {$smarty.session.user->getName(  )} </p>
-        <p class="p-0 m-0">Role: {$smarty.session.role} </p>
+        <p class="p-0 m-0">Role: {$smarty.session.user->getAdminStatus( )} </p>
         <p class="p-0 m-0">Won games: {$smarty.session.user->getWonGames(  )} </p>
         <p class="p-0 m-0">Lost games: {$smarty.session.user->getLostGames(  )} </p>
         <p class="p-0 m-0">Current streak: {$smarty.session.user->getStreak(  )} </p>
