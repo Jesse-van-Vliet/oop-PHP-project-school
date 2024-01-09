@@ -19,7 +19,6 @@ session_start();
 $db = new Db();
 
 
-$admin = new Admin("admin", "admin");
 $medium1 = new Medium("water");
 $medium2 = new Medium("toren");
 $medium3 = new Medium("kamer");
@@ -103,28 +102,21 @@ switch ($action) {
     case "login":
         $usernameExists = false;
         if (!empty($_POST["username"]) && !empty($_POST['password1'])) {
-            foreach (Account::$users as $accountinfo) {
-                if ($accountinfo->getName() === $_POST["username"]) {
+                if (Account::nameExists($_POST["username"])) {
                     $usernameExists = true;
-                    $user = $accountinfo;
-                    if (password_verify($_POST["password1"], $accountinfo->getPassword())) {
-                        $_SESSION['user'] = $user;
-                        if ($accountinfo instanceof Admin) {
-                            $_SESSION['role'] = "admin";
-                            $template->assign("loginSucces", "Logged in succesfull");
-                            $template->display('user.tpl');
-
-                        } elseif ($accountinfo instanceof User) {
-                            $_SESSION['role'] = "user";
-                            $template->assign("loginSucces", "Logged in succesfull");
-                            $template->display('user.tpl');
-                        }
+//                    $user = $accountinfo;
+                    if (Account::passwordVerify($_POST["username"], $_POST['password1'])) {
+                       if(Account::signIn($_POST["username"]) !== null){
+                           $_SESSION["user"] = Account::signIn($_POST["username"]);
+                           $template->assign("loginSucces", "Logged in succesfull");
+                           $template->display('user.tpl');
+                       }
                     } else {
                         $template->assign("loginError", "Username or password is incorrect");
                         $template->display('login.tpl');
                     }
                 }
-            }
+
         } else {
             $template->assign("loginError", "Please fill in all fields");
             $template->display('login.tpl');
@@ -407,15 +399,14 @@ switch ($action) {
         break;
 
 }
-$_SESSION['user'] = $user;
 $_SESSION['game'] = $game;
 $_SESSION["users"] = Account::$users;
 $_SESSION["words"] = Word::$words;
 //echo "<pre class='mt-5 pt-1'>";
-//echo '<pre>';
+echo '<pre>';
 //////debugging
 //var_dump($_SESSION);
 ////var_dump(Word::$words);
 ////var_dump($_SESSION['game']);
-////var_dump($_SESSION['user']);
+
 //echo "</pre>";
