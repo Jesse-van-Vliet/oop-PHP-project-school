@@ -104,12 +104,12 @@ abstract class Account
         return $this->lostGames;
     }
 
-    public function getAdminStatus() {
+    public function getAdminStatus()
+    {
         if ($this->admin == false) {
             return "user";
-        } else
-        {
-            return  "admin";
+        } else {
+            return "admin";
         }
 
     }
@@ -126,7 +126,7 @@ abstract class Account
     }
 
 
-    public static function nameExists(string $name)
+    public static function nameExists(string $name): bool
     {
         $columns = [
             "account" => [
@@ -146,7 +146,7 @@ abstract class Account
         }
     }
 
-    public static function passwordVerify(string $name, string $password)
+    public static function passwordVerify(string $name, string $password): bool | null
     {
         $columns = [
             "account" => [
@@ -162,16 +162,16 @@ abstract class Account
         if (!empty($result)) {
             $dbpassword = $result[0]["password"];
             if (password_verify($password, $dbpassword)) {
-               return true;
+                return true;
             }
         } else {
-            die("yyyyy");
+            return null;
         }
 
 
     }
 
-    public static function signIn($name)
+    public static function signIn($name): User | null
     {
         $columns = [
             "account" => [
@@ -185,24 +185,64 @@ abstract class Account
 
         $result = Db::$db->select($columns, $params);
 
-        if(!empty($result)){
+        if (!empty($result)) {
             $name = $result[0]["name"];
             $password = $result[0]["password"];
-            if ($result[0]["adminstatus_id"] == 1) {
+            if ($result[0]["adminstatus_id"] == 2) {
                 $admin = false;
             } else {
                 $admin = true;
             }
             return new User($name, $password, $admin);
-        }else
-        {
+        } else {
             return null;
         }
     }
 
-    /**
-     * @return array
-     */
+    public static function getRole($name): bool | null
+    {
+        $columns = [
+            "account" => [
+                "adminstatus_id",
+            ]
+        ];
 
+        $params = [
+            "name" => $name,
+        ];
 
+        $result = Db::$db->select($columns, $params);
+
+        if (!empty($result)) {
+            if ($result[0]["adminstatus_id"] == 2) {
+                $admin = false;
+            } else {
+                $admin = true;
+            }
+            return $admin;
+        } else {
+            return null;
+        }
+    }
+
+    public static function getId($name): int | null
+    {
+        $columns = [
+            "account" => [
+                "id",
+            ]
+        ];
+
+        $params = [
+            "name" => $name,
+        ];
+
+        $result = Db::$db->select($columns, $params);
+
+        if (!empty($result)) {
+            return $result[0]["id"];
+        } else {
+            return null;
+        }
+    }
 }

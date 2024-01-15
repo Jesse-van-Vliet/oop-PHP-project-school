@@ -4,7 +4,7 @@ namespace Oopproj;
 
 class Game
 {
-    private Easy|Medium|Hard $wordToGuess;
+    private string $wordToGuess;
     private int $attempts;
     private int $usedAttempts;
     private array $guessedWords = [];
@@ -21,17 +21,141 @@ class Game
        $this->gameWon = $gameWon;
    }
 
-    public static function randomWord(): word
+   public static function createGame(): void
+   {
+       $table = "game";
+       $params = [
+           "date" => date("Y-m-d H:i:s"),
+           "account_id" => User::getId($_SESSION["user"]->getName()),
+           "words_id" => self::randomWord(),
+       ];
+       Db::$db->insert($table, $params);
+   }
+
+    public static function randomWord(): int | null
     {
-        $randomIndex = array_rand(Word::$words);
-        return Word::$words[$randomIndex];
+        $columns = [
+              "words" => [
+                 "id",
+                ]
+        ];
+        $result = Db::$db->select($columns);
+        if (!empty($result)) {
+//            echo "<pre>";
+//            return $result[array_rand($result)][0];
+//            die(var_dump(array_rand($result)));
+            return array_rand($result);
+        } else {
+            return null;
+        }
+    }
+
+    public static function checkCompleted()
+    {
+        $columns = [
+            "game" => [
+                "status",
+                "account_id"
+            ]
+        ];
+        $params = [
+            "account_id" => User::getId($_SESSION["user"]->getName())
+        ];
+        $result = Db::$db->select($columns, $params);
+        if (!empty($result)) {
+            $lastKey = array_key_last($result);
+            return $result[$lastKey]["status"];
+        } else {
+            return "pass";
+        }
+    }
+
+    public static function getGameId(): int | null
+    {
+        $columns = [
+            "game" => [
+                "id",
+            ]
+        ];
+        $params = [
+            "account_id" => User::getId($_SESSION["user"]->getName())
+        ];
+        $result = Db::$db->select($columns, $params);
+        if (!empty($result)) {
+            $lastKey = array_key_last($result);
+            return $result[$lastKey]["id"];
+        } else {
+            return null;
+        }
+    }
+
+    public static function addGuessedWord($word): void
+    {
+        $table = "guesses";
+        $params = [
+            "name" => $word,
+            "game_id" => self::getGameId(),
+        ];
+        Db::$db->insert($table, $params);
+    }
+
+    public static function getWordToGuess($gameId): string | null
+    {
+        $columns = [
+            "game" => [
+                "words_id",
+            ]
+        ];
+        $params = [
+            "id" => $gameId
+        ];
+        $wordId = Db::$db->select($columns, $params);
+//        die(var_dump($wordId));
+        $columns = [
+            "words" => [
+                "name",
+            ]
+        ];
+        $params = [
+            "id" => $wordId[0]["words_id"]
+        ];
+        $result = Db::$db->select($columns, $params);
+//        die($result[0]["name"]);
+        if (!empty($result)) {
+            return $result[0]["name"];
+        } else {
+            return null;
+        }
+    }
+
+    public static function getGuessedWords(): array | null
+    {
+        $columns = [
+            "guesses" => [
+                "name",
+            ]
+        ];
+        $params = [
+            "game_id" => Game::getGameId()
+        ];
+        $result = Db::$db->select($columns, $params);
+        if (!empty($result)) {
+            return $result;
+        } else {
+            return null;
+        }
+    }
+
+    public function setWordToGuess($wordToGuess): void
+    {
+        $this->wordToGuess = $wordToGuess;
     }
 
     /**
      * @return Easy|Hard|Medium
      */
 
-    public function getWordToGuess(): Easy|Hard|Medium
+    public function getWordToGuesss(): string
     {
         return $this->wordToGuess;
     }
@@ -78,7 +202,7 @@ class Game
     }
 
 
-    public function addGuessedWord(string $guessedWord): void
+    public function addGuessedWords(string $guessedWord): void
     {
         $this->guessedWords[] = $guessedWord;
     }
