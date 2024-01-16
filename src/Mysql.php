@@ -50,14 +50,68 @@ class Mysql implements Database
         }
     }
 
-    public function update()
+    public function update(string $table, array $params = [], array $conditions = [])
     {
-        // TODO: Implement update() method.
+        try {
+            // UPDATE user SET username = ':test', email = ':email' WHERE id = 1
+            // TODO: Implement update() method.
+            if (!empty($table) && !empty($params) && !empty($conditions))
+            {
+                $query = "UPDATE $table SET ";
+                $query .= implode( ", ", array_map( function ($column){
+                    return "$column = :$column";
+                }, array_keys($params)));
+                // UPDATE user SET username = :username, email = :email
+
+                $query .= " WHERE ";
+                $query .= implode( ", ", array_map( function ($column){
+                    return "$column = :$column";
+                }, array_keys($conditions)));
+                // UPDATE user SET username = :username, email = :email WHERE id = :id
+
+
+                $query = $this->connection->prepare($query);
+
+                foreach ($params as $key => $value) {
+                    $query->bindValue(":$key", $value);
+                }
+
+                foreach ($conditions as $key => $value) {
+                    $query->bindValue(':'.$key, $value);
+                }
+                $query->execute();
+            } else {
+                echo "foutmelding";
+            }
+        } catch(PDOException $error) {
+            throw new Exception($error->getMessage());
+        }
+
+
     }
 
-    public function delete()
+    public function delete(string $table, array $conditions = [])
     {
         // TODO: Implement delete() method.
+        // DELETE FROM user WHERE id = 1
+        if(!empty($conditions)) {
+            try {
+                $query = "DELETE FROM $table WHERE ";
+                $query .= " WHERE ";
+                $query .= implode( ", ", array_map( function ($column){
+                    return "$column = :column";
+                }, array_keys($conditions)));
+
+                foreach ($conditions as $key => $value) {
+                    $query->bindValue(':'.$key, $value);
+                }
+                $query->execute();
+            } catch (PDOException $error) {
+                throw new Exception($error->getMessage());
+            }
+        } else {
+            echo "Foutmelding";
+        }
     }
 
     public function select(array $columns, array $params = [])
