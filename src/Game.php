@@ -89,6 +89,30 @@ class Game
         }
     }
 
+    public static function setGameWon(): void
+    {
+        $table = "game";
+        $params = [
+            "status" => "won",
+        ];
+        $conditions = [
+            "id" => self::getGameId()
+        ];
+        Db::$db->update($table, $params, $conditions);
+    }
+
+    public static function setGameLost(): void
+    {
+        $table = "game";
+        $params = [
+            "status" => "lost",
+        ];
+        $conditions = [
+            "id" => self::getGameId()
+        ];
+        Db::$db->update($table, $params, $conditions);
+    }
+
     public static function addGuessedWord($word): void
     {
         $table = "guesses";
@@ -207,7 +231,7 @@ class Game
         $this->guessedWords[] = $guessedWord;
     }
 
-    public function setGameWon(): void
+    public function setGameWonn(): void
     {
         $this->gameWon = true;
     }

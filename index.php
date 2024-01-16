@@ -67,7 +67,7 @@ switch ($action) {
                 $template->display("register.tpl");
             } elseif ($_POST['password1'] === $_POST['password2']) {
                 // If the username doesn't exist, and passwords match, add the user
-                $users = new User($_POST['username'], $_POST['password1']);
+                $users = new User($_POST['username'], $_POST['password1'], false);
                 User::register($_POST['username'], password_hash($_POST['password1'], PASSWORD_BCRYPT));
                 $template->assign("registerSucces", "Your account has been created, you can now login");
                 $template->display("login.tpl");
@@ -274,6 +274,7 @@ switch ($action) {
                 if ($game->getAttempts() > 1) {
                     //               Guessed the word
                     if ($wordToGuess === $userGuess1) {
+                        Game::setGameWon();
                         $game->setGameWon();
                         $user->addGame($game);
                         $user->addStreak();
@@ -360,6 +361,7 @@ switch ($action) {
                     Game::addGuessedWord($userGuess1);
 //                clears streak
                     $user->clearStreak();
+                    Game::setGameLost(Game::getGameId());
                     $user->addLost();
                     $user->addGame($game);
                     $template->assign("gameError", "You have no attempts left, you lost the game the word was ". $wordToGuess);
