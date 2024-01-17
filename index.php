@@ -219,6 +219,10 @@ switch ($action) {
                     $wordToGuess = Word::getNameFromId(Game::randomWord());
 //                    debug code
                     echo 'een game session bestond nog niet dus ik heb een nieuwe gemaakt';
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
                 } else {
 //                    if game has been set it will be unset and a new game will be created
                     unset($_SESSION['game']);
@@ -227,6 +231,45 @@ switch ($action) {
                     $DBGuessedWords = Game::getGuessedWords();
                     $game = new Game();
                     $game->setWordToGuess(Game::getWordToGuess(Game::getGameId()));
+                    $wordToGuess = Game::getWordToGuess(Game::getGameId());
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+//                    die(var_dump($DBGuessedWords));
+                    echo "<div style='white-space: nowrap;'>";
+                    foreach ($DBGuessedWords as $DBGuessedWord) {
+                        $guessedWord = $DBGuessedWord['name'];
+                        $_SESSION["guessedWords"][] = $guessedWord;
+                        $game->addGuessedWords($guessedWord);
+                        //                  Display each letter in the guessed word with colors
+                        $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
+                        echo "<br>";
+                        //                      Display each letter in the guessed word with colors
+                        $yellowMarkedLetters = array();
+
+                        for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
+                            $letter = mb_substr($guessedWord, $i, 1);
+
+                            if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
+                                echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
+                                $lettersStatus[$letter] = 2;
+                            } else {
+                                // Check if the letter is in the wordToGuess and has not been marked green or yellow
+                                if (
+                                    mb_strpos($wordToGuess, $letter) !== false &&
+                                    (!isset($lettersStatus[$letter]) || $lettersStatus[$letter] !== 2) &&
+                                    !in_array($letter, $yellowMarkedLetters)
+                                ) {
+                                    echo "<span style='background-color: yellow;font-size: 25px; color: black;'>$letter</span>";
+                                    $lettersStatus[$letter] = 1; // Mark the letter as yellow
+                                    $yellowMarkedLetters[] = $letter; // Mark the letter as yellow in the tracking array
+                                } else {
+                                    echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
+                                }
+                            }
+                        }
+                    }
 //                    debug code
 //                    echo 'er is een bestaande game session dus ik heb hem ge unset en een nieuwe aangemaakt';
                 }
@@ -264,13 +307,10 @@ switch ($action) {
                 //              die($game->getWordToGuesss());
 
                 //              Store the user's input in a separate variable for display
-                $userGuess1 = $_POST['answer'];
+                $userGuess1 = strtolower($_POST['answer']);
                 $displayedGuess = $userGuess1;
                 $template->assign("game", $_SESSION['game']);
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
+
                 if ($game->getAttempts() > 1) {
                     //               Guessed the word
                     if ($wordToGuess === $userGuess1) {
@@ -295,17 +335,23 @@ switch ($action) {
                             $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                             echo "<br>";
                             //                      Display each letter in the guessed word with colors
+                            $yellowMarkedLetters = array();
                             for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                                 $letter = mb_substr($guessedWord, $i, 1);
-                                //                          Identify letters in the correct spot and mark them as 2
+
                                 if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                     echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                     $lettersStatus[$letter] = 2;
                                 } else {
-                                    //                              Identify letters in the word but not in the correct spot and mark them as 1
-                                    if (mb_strpos($wordToGuess, $letter) !== false) {
+                                    // Check if the letter is in the wordToGuess and has not been marked green or yellow
+                                    if (
+                                        mb_strpos($wordToGuess, $letter) !== false &&
+                                        (!isset($lettersStatus[$letter]) || $lettersStatus[$letter] !== 2) &&
+                                        !in_array($letter, $yellowMarkedLetters)
+                                    ) {
                                         echo "<span style='background-color: yellow;font-size: 25px; color: black;'>$letter</span>";
-                                        $lettersStatus[$letter] = 1;
+                                        $lettersStatus[$letter] = 1; // Mark the letter as yellow
+                                        $yellowMarkedLetters[] = $letter; // Mark the letter as yellow in the tracking array
                                     } else {
                                         echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
                                     }
@@ -328,23 +374,31 @@ switch ($action) {
 //                      Display all guessed words from the session
                         echo "<div style='white-space: nowrap;'>";
                         foreach ($_SESSION['guessedWords'] as $guessedWord) {
-//                      Display each letter in the guessed word with colors
+                            //                  Display each letter in the guessed word with colors
                             $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                             echo "<br>";
-//                      Display each letter in the guessed word with colors
+                            //                      Display each letter in the guessed word with colors
+                            $yellowMarkedLetters = array();
+
                             for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                                 $letter = mb_substr($guessedWord, $i, 1);
 
-//                          Identify letters in the correct spot and mark them as 2
                                 if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                     echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                     $lettersStatus[$letter] = 2;
-                                } else if (mb_strpos($wordToGuess, $letter) !== false) {
-                                    // Identify letters in the word but not in the correct spot and mark them as 1
-                                    echo "<span style='background-color: yellow;font-size: 25px;color: black;'>$letter</span>";
-                                    $lettersStatus[$letter] = 1;
                                 } else {
-                                    echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
+                                    // Check if the letter is in the wordToGuess and has not been marked green or yellow
+                                    if (
+                                        mb_strpos($wordToGuess, $letter) !== false &&
+                                        (!isset($lettersStatus[$letter]) || $lettersStatus[$letter] !== 2) &&
+                                        !in_array($letter, $yellowMarkedLetters)
+                                    ) {
+                                        echo "<span style='background-color: yellow;font-size: 25px; color: black;'>$letter</span>";
+                                        $lettersStatus[$letter] = 1; // Mark the letter as yellow
+                                        $yellowMarkedLetters[] = $letter; // Mark the letter as yellow in the tracking array
+                                    } else {
+                                        echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
+                                    }
                                 }
                             }
                         }
@@ -364,29 +418,34 @@ switch ($action) {
                     Game::setGameLost(Game::getGameId());
                     $user->addLost();
                     $user->addGame($game);
-                    $template->assign("gameError", "You have no attempts left, you lost the game the word was ". $wordToGuess);
+                    $template->assign("gameError", "You have no attempts left, you lost the game the word was " . $wordToGuess);
                     $game->setUsedAttempts(7 - $game->getAttempts());
                     echo "The  " . $_SESSION['game']->getUsedAttempts() . " attempts to guess the word";
                     echo "<div style='white-space: nowrap;'>";
 
                     if (isset($_SESSION['guessedWords'])) {
                         foreach ($_SESSION['guessedWords'] as $guessedWord) {
-//                      Display each letter in the guessed word with colors
+                            //                  Display each letter in the guessed word with colors
                             $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                             echo "<br>";
-//                      Display each letter in the guessed word with colors
+                            //                      Display each letter in the guessed word with colors
+                            $yellowMarkedLetters = array();
                             for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                                 $letter = mb_substr($guessedWord, $i, 1);
 
-//                          Identify letters in the correct spot and mark them as 2
                                 if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                     echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                                     $lettersStatus[$letter] = 2;
                                 } else {
-//                              Identify letters in the word but not in the correct spot and mark them as 1
-                                    if (mb_strpos($wordToGuess, $letter) !== false) {
+                                    // Check if the letter is in the wordToGuess and has not been marked green or yellow
+                                    if (
+                                        mb_strpos($wordToGuess, $letter) !== false &&
+                                        (!isset($lettersStatus[$letter]) || $lettersStatus[$letter] !== 2) &&
+                                        !in_array($letter, $yellowMarkedLetters)
+                                    ) {
                                         echo "<span style='background-color: yellow;font-size: 25px; color: black;'>$letter</span>";
-                                        $lettersStatus[$letter] = 1;
+                                        $lettersStatus[$letter] = 1; // Mark the letter as yellow
+                                        $yellowMarkedLetters[] = $letter; // Mark the letter as yellow in the tracking array
                                     } else {
                                         echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
                                     }
@@ -401,27 +460,29 @@ switch ($action) {
 
                 $game->setAttempts($game->getAttempts() - 1);
             } else {
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
                 echo "<div style='white-space: nowrap;'>";
                 foreach ($_SESSION['guessedWords'] as $guessedWord) {
                     //                  Display each letter in the guessed word with colors
                     $lettersStatus = array();  // Initialize lettersStatus array for each guessed word
                     echo "<br>";
                     //                      Display each letter in the guessed word with colors
+                    $yellowMarkedLetters = array();
                     for ($i = 0; $i < mb_strlen($guessedWord); $i++) {
                         $letter = mb_substr($guessedWord, $i, 1);
-                        //                          Identify letters in the correct spot and mark them as 2
+
                         if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                             echo "<span style='background-color: #22ff22;font-size: 25px;color: black;'>$letter</span>";
                             $lettersStatus[$letter] = 2;
                         } else {
-                            //                              Identify letters in the word but not in the correct spot and mark them as 1
-                            if (mb_strpos($wordToGuess, $letter) !== false) {
+                            // Check if the letter is in the wordToGuess and has not been marked green or yellow
+                            if (
+                                mb_strpos($wordToGuess, $letter) !== false &&
+                                (!isset($lettersStatus[$letter]) || $lettersStatus[$letter] !== 2) &&
+                                !in_array($letter, $yellowMarkedLetters)
+                            ) {
                                 echo "<span style='background-color: yellow;font-size: 25px; color: black;'>$letter</span>";
-                                $lettersStatus[$letter] = 1;
+                                $lettersStatus[$letter] = 1; // Mark the letter as yellow
+                                $yellowMarkedLetters[] = $letter; // Mark the letter as yellow in the tracking array
                             } else {
                                 echo "<span style='background-color: red;font-size: 25px;color: black;'>$letter</span>";
                             }

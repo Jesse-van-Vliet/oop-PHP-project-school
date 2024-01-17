@@ -123,6 +123,24 @@ class Game
         Db::$db->insert($table, $params);
     }
 
+    public static function getGuessedWords(): array | null
+    {
+        $columns = [
+            "guesses" => [
+                "name",
+            ]
+        ];
+        $params = [
+            "game_id" => Game::getGameId()
+        ];
+        $result = Db::$db->select($columns, $params);
+        if (!empty($result)) {
+            return $result;
+        } else {
+            return null;
+        }
+    }
+
     public static function getWordToGuess($gameId): string | null
     {
         $columns = [
@@ -147,24 +165,6 @@ class Game
 //        die($result[0]["name"]);
         if (!empty($result)) {
             return $result[0]["name"];
-        } else {
-            return null;
-        }
-    }
-
-    public static function getGuessedWords(): array | null
-    {
-        $columns = [
-            "guesses" => [
-                "name",
-            ]
-        ];
-        $params = [
-            "game_id" => Game::getGameId()
-        ];
-        $result = Db::$db->select($columns, $params);
-        if (!empty($result)) {
-            return $result;
         } else {
             return null;
         }
@@ -226,9 +226,16 @@ class Game
     }
 
 
-    public function addGuessedWords(string $guessedWord): void
+    public function addGuessedWords(string | array $guessedWord): void
     {
-        $this->guessedWords[] = $guessedWord;
+        if (is_array($guessedWord)) {
+            // If $guessedWord is an array, concatenate its elements into a string
+            $guessedWordString = implode(', ', $guessedWord);
+            $this->guessedWords[] = $guessedWordString;
+        } else {
+            // If $guessedWord is a string, add it directly
+            $this->guessedWords[] = $guessedWord;
+        }
     }
 
     public function setGameWonn(): void
