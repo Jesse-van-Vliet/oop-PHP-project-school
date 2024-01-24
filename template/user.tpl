@@ -20,6 +20,7 @@
 
     </div>
         <a class="btn btn-primary" href="/index.php?action=logoutForm">Logout</a>
+        <a class="btn btn-primary" href="/index.php?action=deleteForm">Delete Account</a>
 
 
     {/if}

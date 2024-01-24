@@ -97,13 +97,14 @@ class Mysql implements Database
         if(!empty($conditions)) {
             try {
                 $query = "DELETE FROM $table WHERE ";
-                $query .= " WHERE ";
                 $query .= implode( ", ", array_map( function ($column){
-                    return "$column = :column";
+                    return "$column = :$column";
                 }, array_keys($conditions)));
 
+                $query = $this->connection->prepare($query);
+
                 foreach ($conditions as $key => $value) {
-                    $query->bindValue(':'.$key, $value);
+                    $query->bindValue("$key", $value);
                 }
                 $query->execute();
             } catch (PDOException $error) {
