@@ -4,6 +4,7 @@ namespace Oopproj;
 
 abstract class Account
 {
+    protected int $id;
     private string $name;
     private string $password;
     private bool $admin;
@@ -14,8 +15,9 @@ abstract class Account
     public int $Streak = 0;
     public int $longestStreak = 0;
 
-    public function __construct(string $name, string $password, bool $admin)
+    public function __construct(int $id, string $name, string $password, bool $admin)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->admin = $admin;
         $this->password = password_hash($password, PASSWORD_BCRYPT);
@@ -162,13 +164,15 @@ abstract class Account
         if (!empty($result)) {
             $dbpassword = $result[0]["password"];
             if (password_verify($password, $dbpassword)) {
-                return true;
+                $return = true;
+            } else {
+                $return = false;
             }
         } else {
-            return null;
+            $return = null;
         }
 
-
+        return $return;
     }
 
     public static function signIn($name): User | null
@@ -186,6 +190,7 @@ abstract class Account
         $result = Db::$db->select($columns, $params);
 
         if (!empty($result)) {
+            $id = $result[0]["id"];
             $name = $result[0]["name"];
             $password = $result[0]["password"];
             if ($result[0]["adminstatus_id"] == 2) {
@@ -193,7 +198,7 @@ abstract class Account
             } else {
                 $admin = true;
             }
-            return new User($name, $password, $admin);
+            return new User($id, $name, $password, $admin);
         } else {
             return null;
         }
@@ -245,4 +250,14 @@ abstract class Account
             return null;
         }
     }
+
+
+
+
+
+
+
+
+
+
 }

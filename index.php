@@ -67,7 +67,7 @@ switch ($action) {
                 $template->display("register.tpl");
             } elseif ($_POST['password1'] === $_POST['password2']) {
                 // If the username doesn't exist, and passwords match, add the user
-                $users = new User($_POST['username'], $_POST['password1'], false);
+                $users = new User(false, $_POST['username'], $_POST['password1'], false);
                 User::register($_POST['username'], password_hash($_POST['password1'], PASSWORD_BCRYPT));
                 $template->assign("registerSucces", "Your account has been created, you can now login");
                 $template->display("login.tpl");
@@ -195,6 +195,24 @@ switch ($action) {
         }
         $template->display('login.tpl');
         break; // Move this break statement to the end of the switch block
+
+    case "deleteForm":
+        $template->display('deleteAccount.tpl');
+        break;
+
+    case "delete":
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
+            $_SESSION['user']->deleteUserGames();
+            $_SESSION['user']->deleteAccount();
+            unset($_SESSION['role']);
+            unset($_SESSION['user']);
+            $user = null;
+            $template->assign("logoutSucces", "Logged out successfully");
+        } else {
+            $template->assign("logoutError", "Something went wrong");
+        }
+        $template->display('login.tpl');
+        break;
 
     case "process":
 //        checks if start game button on home page is pressed
@@ -460,5 +478,7 @@ echo '<pre>';
 //var_dump(Word::$words);
 //var_dump($_SESSION['game']);
 //var_dump($_SESSION['role']);
-
+var_dump($_SESSION['user']);
 //echo "</pre>";
+
+
