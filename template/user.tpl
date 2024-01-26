@@ -9,6 +9,8 @@
         {/if}
 
 
+
+
     <h1>Account information</h1>
     <div class="p-0 m-0 d-flex flex-md-column w-25 justify-content-around m-5">
         <p class="p-0 m-0">Username: {$smarty.session.user->getName(  )} </p>
@@ -21,6 +23,7 @@
     </div>
         <a class="btn btn-primary" href="/index.php?action=logoutForm">Logout</a>
         <a class="btn btn-primary" href="/index.php?action=deleteForm">Delete Account</a>
+        <a class="btn btn-primary" href="/index.php?action=nameChangeForm">change name</a>
 
 
     {/if}
