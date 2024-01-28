@@ -23,11 +23,24 @@ class User extends Account
 
     public function deleteUserGames(): void
     {
-        $table = "game";
+        $columns = [
+            "game" => [
+                "id"
+            ]
+        ];
         $params = [
             "account_id" => $this->id
         ];
-        Db::$db->delete($table, $params);
+
+        $games = Db::$db->select($columns, $params);
+
+        foreach ($games as $game) {
+            $table = "game";
+            $params = [
+                "id" => $game["id"]
+            ];
+            Db::$db->delete($table, $params);
+        }
     }
 
     public function changeName($name){
@@ -35,17 +48,58 @@ class User extends Account
         $params = [
             "name" => $name
         ];
+    
 
         $conditions = [
             "id" => $this->id
         ];
         Db::$db->update($table, $params, $conditions);
     }
+    
+    public function deleteUserGuesses(): void
+    {
+        $columns = [
+            "game" => [
+                "id"
+            ]
+        ];
+        $params = [
+            "account_id" => $this->id
+        ];
+    
+        $games = Db::$db->select($columns, $params);
 
+        foreach ($games as $game) {
+            $table = "guesses";
+            $params = [
+                "game_id" => $game["id"]
+            ];
 
+            $guesses = Db::$db->select(["guesses" => ["id"]], $params);
 
+            foreach ($guesses as $guess) {
+                $guessTable = "guesses";
+                $guessParams = [
+                    "id" => $guess["id"]
+                ];
+                Db::$db->delete($guessTable, $guessParams);
+            }
+        }
+    }
 
-
+    public function checkGamesPlayed(): int
+    {
+        $columns = [
+            "game" => [
+                "id"
+            ]
+        ];
+        $params = [
+            "account_id" => $this->id
+        ];
+        $games = Db::$db->select($columns, $params);
+        return count($games);
+    }
 
 
 }
