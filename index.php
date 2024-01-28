@@ -214,6 +214,7 @@ switch ($action) {
         $template->display('login.tpl');
         break;
 
+
     case "process":
 //        checks if start game button on home page is pressed
         if (isset($_POST['startGame'])) {
@@ -305,6 +306,40 @@ switch ($action) {
         } else {
             $template->assign("selectDifficultyError", "Something went wrong");
             $template->display('user.tpl');
+        }
+        break;
+
+    case "nameChangeForm":
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
+            $template->display('nameChange.tpl');
+        } else {
+            $template->assign("loginError", "loginFirst");
+            $template->display('login.tpl');
+        }
+        break;
+
+
+    case "nameChange":
+        if (isset($_SESSION['role']) && isset($_SESSION['user'])) {
+            if (!empty($_POST['newName'])) {
+                if (Account::nameExists($_POST['newName'])) {
+                    $template->assign("nameChangeError", "Username already exists");
+                    $template->display('nameChange.tpl');
+                } else {
+                    $_SESSION['user']->changeName($_POST['newName']);
+                    $template->assign("nameChangeSucces", "Username has been changed, please log in again");
+                    unset($_SESSION['role']);
+                    unset($_SESSION['user']);
+                    $user = null;
+                    $template->display('login.tpl');
+                }
+            } else {
+                $template->assign("nameChangeError", "Please fill in the field");
+                $template->display('nameChange.tpl');
+            }
+        } else {
+            $template->assign("loginError", "loginFirst");
+            $template->display('login.tpl');
         }
         break;
 

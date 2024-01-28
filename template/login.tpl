@@ -14,6 +14,12 @@
             </div>
         {/if}
 
+        {if isset($nameChangeSucces)}
+            <div class="alert alert-success" role="alert">
+                {$nameChangeSucces}
+            </div>
+        {/if}
+
 
         {if isset($registerSucces)}
             <div class="alert alert-success" role="alert">

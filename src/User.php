@@ -30,6 +30,17 @@ class User extends Account
         Db::$db->delete($table, $params);
     }
 
+    public function changeName($name){
+        $table = "account";
+        $params = [
+            "name" => $name
+        ];
+
+        $conditions = [
+            "id" => $this->id
+        ];
+        Db::$db->update($table, $params, $conditions);
+    }
 
 
 
