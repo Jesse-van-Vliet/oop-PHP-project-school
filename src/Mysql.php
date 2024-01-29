@@ -134,32 +134,28 @@ class Mysql implements Database
          *  ];
          */
 
-        try{
+        try {
             $query = "SELECT ";
             $columnNameArray = [];
-            foreach($columns as $tableName => $columnArray)
-                {
-                    if(is_array($columnArray)){
-                        foreach($columnArray as $columnName){
-                            // [ 0 => 'user.id', 1 => 'user.name'
-                            $columnNameArray[] = "$tableName.$columnName";
-                        }
+            foreach ($columns as $tableName => $columnArray) {
+                if (is_array($columnArray)) {
+                    foreach ($columnArray as $columnName) {
+                        // [ 0 => 'user.id', 1 => 'user.name'
+                        $columnNameArray[] = "$tableName.$columnName";
                     }
                 }
+            }
             // SELECT user.id, user.name, order.date
             $query .= implode(", ", $columnNameArray);
             $query .= " FROM ";
             $query .= implode(", ", array_keys($columns));
             // SELECT user.id, user.name, order.date FROM user, order
-            if (!empty($params))
-            {
+            if (!empty($params)) {
                 $query .= " WHERE ";
                 $conditions = [];
-                foreach($params as $key => $value)
-                {
+                foreach ($params as $key => $value) {
                     $tableAndColumn = explode(".", $key, 2);
-                    if(count($tableAndColumn) == 2)
-                    {
+                    if (count($tableAndColumn) == 2) {
                         // user.id
                         $table = $tableAndColumn[0];
                         $column = $tableAndColumn[1];
@@ -186,10 +182,9 @@ class Mysql implements Database
 //                    $date->format("Y-m-d");
 
                     // $values bekijken
-                    if(is_array($value))
-                    {
+                    if (is_array($value)) {
                         // between
-                        $conditions[] = "$table.column BETWEEN '".$value[0]."'AND '".$value[1]."'";
+                        $conditions[] = "$table.column BETWEEN '" . $value[0] . "'AND '" . $value[1] . "'";
                     } elseif (strpos($key, "LIKE") !== false) {
                         // like
                         $conditions[] = "$table.$column '$value'";
@@ -206,7 +201,7 @@ class Mysql implements Database
             }
             $result = $this->connection->query($query);
             return $result->fetchAll(PDO::FETCH_ASSOC);
-        }catch (PDOException $error){
+        } catch (PDOException $error) {
             throw new Exception($error->getMessage());
         }
     }

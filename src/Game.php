@@ -10,34 +10,34 @@ class Game
     private array $guessedWords = [];
     private bool $gameWon;
 
-   public function __construct( Easy|Medium|Hard $wordToGuess = null, int $attempts = 6, int $usedAttempts = 0, bool $gameWon = false)
-   {
-       $this->attempts = $attempts;
-       $this->usedAttempts = $usedAttempts;
-       if ($wordToGuess === null) {
-           $wordToGuess = self::randomWord();
-       }
-       $this->wordToGuess = $wordToGuess;
-       $this->gameWon = $gameWon;
-   }
+    public function __construct(Easy|Medium|Hard $wordToGuess = null, int $attempts = 6, int $usedAttempts = 0, bool $gameWon = false)
+    {
+        $this->attempts = $attempts;
+        $this->usedAttempts = $usedAttempts;
+        if ($wordToGuess === null) {
+            $wordToGuess = self::randomWord();
+        }
+        $this->wordToGuess = $wordToGuess;
+        $this->gameWon = $gameWon;
+    }
 
-   public static function createGame(): void
-   {
-       $table = "game";
-       $params = [
-           "date" => date("Y-m-d H:i:s"),
-           "account_id" => User::getId($_SESSION["user"]->getName()),
-           "words_id" => self::randomWord(),
-       ];
-       Db::$db->insert($table, $params);
-   }
+    public static function createGame(): void
+    {
+        $table = "game";
+        $params = [
+            "date" => date("Y-m-d H:i:s"),
+            "account_id" => User::getId($_SESSION["user"]->getName()),
+            "words_id" => self::randomWord(),
+        ];
+        Db::$db->insert($table, $params);
+    }
 
-    public static function randomWord(): int | null
+    public static function randomWord(): int|null
     {
         $columns = [
-              "words" => [
-                 "id",
-                ]
+            "words" => [
+                "id",
+            ]
         ];
         $result = Db::$db->select($columns);
         if (!empty($result)) {
@@ -70,7 +70,7 @@ class Game
         }
     }
 
-    public static function getGameId(): int | null
+    public static function getGameId(): int|null
     {
         $columns = [
             "game" => [
@@ -123,7 +123,7 @@ class Game
         Db::$db->insert($table, $params);
     }
 
-    public static function getGuessedWords(): array | null
+    public static function getGuessedWords(): array|null
     {
         $columns = [
             "guesses" => [
@@ -141,7 +141,7 @@ class Game
         }
     }
 
-    public static function getWordToGuess($gameId): string | null
+    public static function getWordToGuess($gameId): string|null
     {
         $columns = [
             "game" => [
@@ -193,7 +193,6 @@ class Game
     }
 
 
-
     public function getWordsize(): int
     {
         return strlen($this->wordToGuess->getName());
@@ -226,7 +225,7 @@ class Game
     }
 
 
-    public function addGuessedWords(string | array $guessedWord): void
+    public function addGuessedWords(string|array $guessedWord): void
     {
         if (is_array($guessedWord)) {
             // If $guessedWord is an array, concatenate its elements into a string
@@ -242,10 +241,6 @@ class Game
     {
         $this->gameWon = true;
     }
-
-
-
-
 
 
 }

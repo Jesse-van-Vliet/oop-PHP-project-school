@@ -6,7 +6,7 @@ class User extends Account
 {
 
 
-    public function __construct( int $id, string $name, string $password, bool $admin)
+    public function __construct(int $id, string $name, string $password, bool $admin)
     {
         parent::__construct($id, $name, $password, $admin);
     }
@@ -43,19 +43,20 @@ class User extends Account
         }
     }
 
-    public function changeName($name){
+    public function changeName($name)
+    {
         $table = "account";
         $params = [
             "name" => $name
         ];
-    
+
 
         $conditions = [
             "id" => $this->id
         ];
         Db::$db->update($table, $params, $conditions);
     }
-    
+
     public function deleteUserGuesses(): void
     {
         $columns = [
@@ -66,7 +67,7 @@ class User extends Account
         $params = [
             "account_id" => $this->id
         ];
-    
+
         $games = Db::$db->select($columns, $params);
 
         foreach ($games as $game) {

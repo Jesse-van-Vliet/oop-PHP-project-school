@@ -452,14 +452,12 @@ switch ($action) {
                         Game::addGuessedWord($userGuess1);
                         echo "It took you " . $game->getUsedAttempts() . " attempts to guess the word";
                         echo "<div style='white-space: nowrap;'>";
-                        // Initialize an array to keep track of correctly guessed letters
-                        $correctlyGuessedLetters = array();
 
                         foreach ($_SESSION['guessedWords'] as $guessedWord) {
                             // Display each letter in the guessed word with colors
                             $lettersArray = array(); // Array to hold letters in order
                             $colorsArray = array();  // Array to hold corresponding colors
-                            $correctlyGuessedLetters = array(); // Array to keep track of correctly guessed letters for each guess
+                            $correctlyGuessedPositions = array(); // Array to keep track of correctly guessed positions for each guess
                             echo "<br>";
 
                             // Display each letter in the guessed word with colors
@@ -469,18 +467,16 @@ switch ($action) {
                                 if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                     $lettersArray[] = $letter;
                                     $colorsArray[] = "#22ff22"; // Green color
-                                    $correctlyGuessedLetters[] = $letter; // Add the correctly guessed letter
+                                    $correctlyGuessedPositions[] = $i; // Add the correctly guessed position
                                 } else {
                                     // Check if the letter is in the wordToGuess and has not been marked green or yellow
                                     if (
                                         mb_strpos($wordToGuess, $letter) !== false &&
-                                        !in_array($letter, $lettersArray) &&
-                                        !in_array($letter, $correctlyGuessedLetters) &&
-                                        !in_array($letter, array_intersect($correctlyGuessedLetters, str_split($guessedWord)))
+                                        !in_array($i, $correctlyGuessedPositions)
                                     ) {
                                         $lettersArray[] = $letter;
                                         $colorsArray[] = "yellow"; // Yellow color
-                                        $correctlyGuessedLetters[] = $letter; // Mark the letter as correctly guessed
+                                        $correctlyGuessedPositions[] = $i; // Mark the position as correctly guessed
                                     } else {
                                         $lettersArray[] = $letter;
                                         $colorsArray[] = "red"; // Red color
@@ -513,7 +509,7 @@ switch ($action) {
                             // Display each letter in the guessed word with colors
                             $lettersArray = array(); // Array to hold letters in order
                             $colorsArray = array();  // Array to hold corresponding colors
-                            $correctlyGuessedLetters = array(); // Array to keep track of correctly guessed letters for each guess
+                            $correctlyGuessedPositions = array(); // Array to keep track of correctly guessed positions for each guess
                             echo "<br>";
 
                             // Display each letter in the guessed word with colors
@@ -523,18 +519,16 @@ switch ($action) {
                                 if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                     $lettersArray[] = $letter;
                                     $colorsArray[] = "#22ff22"; // Green color
-                                    $correctlyGuessedLetters[] = $letter; // Add the correctly guessed letter
+                                    $correctlyGuessedPositions[] = $i; // Add the correctly guessed position
                                 } else {
                                     // Check if the letter is in the wordToGuess and has not been marked green or yellow
                                     if (
                                         mb_strpos($wordToGuess, $letter) !== false &&
-                                        !in_array($letter, $lettersArray) &&
-                                        !in_array($letter, $correctlyGuessedLetters) &&
-                                        !in_array($letter, array_intersect($correctlyGuessedLetters, str_split($guessedWord)))
+                                        !in_array($i, $correctlyGuessedPositions)
                                     ) {
                                         $lettersArray[] = $letter;
                                         $colorsArray[] = "yellow"; // Yellow color
-                                        $correctlyGuessedLetters[] = $letter; // Mark the letter as correctly guessed
+                                        $correctlyGuessedPositions[] = $i; // Mark the position as correctly guessed
                                     } else {
                                         $lettersArray[] = $letter;
                                         $colorsArray[] = "red"; // Red color
@@ -572,7 +566,7 @@ switch ($action) {
                         // Display each letter in the guessed word with colors
                         $lettersArray = array(); // Array to hold letters in order
                         $colorsArray = array();  // Array to hold corresponding colors
-                        $correctlyGuessedLetters = array(); // Array to keep track of correctly guessed letters for each guess
+                        $correctlyGuessedPositions = array(); // Array to keep track of correctly guessed positions for each guess
                         echo "<br>";
 
                         // Display each letter in the guessed word with colors
@@ -582,18 +576,16 @@ switch ($action) {
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 $lettersArray[] = $letter;
                                 $colorsArray[] = "#22ff22"; // Green color
-                                $correctlyGuessedLetters[] = $letter; // Add the correctly guessed letter
+                                $correctlyGuessedPositions[] = $i; // Add the correctly guessed position
                             } else {
                                 // Check if the letter is in the wordToGuess and has not been marked green or yellow
                                 if (
                                     mb_strpos($wordToGuess, $letter) !== false &&
-                                    !in_array($letter, $lettersArray) &&
-                                    !in_array($letter, $correctlyGuessedLetters) &&
-                                    !in_array($letter, array_intersect($correctlyGuessedLetters, str_split($guessedWord)))
+                                    !in_array($i, $correctlyGuessedPositions)
                                 ) {
                                     $lettersArray[] = $letter;
                                     $colorsArray[] = "yellow"; // Yellow color
-                                    $correctlyGuessedLetters[] = $letter; // Mark the letter as correctly guessed
+                                    $correctlyGuessedPositions[] = $i; // Mark the position as correctly guessed
                                 } else {
                                     $lettersArray[] = $letter;
                                     $colorsArray[] = "red"; // Red color
@@ -619,7 +611,7 @@ switch ($action) {
                         // Display each letter in the guessed word with colors
                         $lettersArray = array(); // Array to hold letters in order
                         $colorsArray = array();  // Array to hold corresponding colors
-                        $correctlyGuessedLetters = array(); // Array to keep track of correctly guessed letters for each guess
+                        $correctlyGuessedPositions = array(); // Array to keep track of correctly guessed positions for each guess
                         echo "<br>";
 
                         // Display each letter in the guessed word with colors
@@ -629,18 +621,16 @@ switch ($action) {
                             if (isset($wordToGuess[$i]) && $wordToGuess[$i] === $letter) {
                                 $lettersArray[] = $letter;
                                 $colorsArray[] = "#22ff22"; // Green color
-                                $correctlyGuessedLetters[] = $letter; // Add the correctly guessed letter
+                                $correctlyGuessedPositions[] = $i; // Add the correctly guessed position
                             } else {
                                 // Check if the letter is in the wordToGuess and has not been marked green or yellow
                                 if (
                                     mb_strpos($wordToGuess, $letter) !== false &&
-                                    !in_array($letter, $lettersArray) &&
-                                    !in_array($letter, $correctlyGuessedLetters) &&
-                                    !in_array($letter, array_intersect($correctlyGuessedLetters, str_split($guessedWord)))
+                                    !in_array($i, $correctlyGuessedPositions)
                                 ) {
                                     $lettersArray[] = $letter;
                                     $colorsArray[] = "yellow"; // Yellow color
-                                    $correctlyGuessedLetters[] = $letter; // Mark the letter as correctly guessed
+                                    $correctlyGuessedPositions[] = $i; // Mark the position as correctly guessed
                                 } else {
                                     $lettersArray[] = $letter;
                                     $colorsArray[] = "red"; // Red color

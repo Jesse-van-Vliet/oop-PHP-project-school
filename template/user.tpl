@@ -17,7 +17,7 @@
         <p class="p-0 m-0">Role: {$smarty.session.user->getAdminStatus( )} </p>
         <p class="p-0 m-0">Won games: {$smarty.session.user->getWonGames(  )} </p>
         <p class="p-0 m-0">Lost games: {$smarty.session.user->getLostGames(  )} </p>
-        <p class="p-0 m-0">Current streak: {$smarty.session.user->getStreak(  )} </p>
+        <p class="p-0 m-0">Current streak: {$smarty.session.user->getCurrentStreak(  )} </p>
         <p class="p-0 m-0">Longest streak: {$smarty.session.user->getLongestStreak(  )} </p>
 
     </div>

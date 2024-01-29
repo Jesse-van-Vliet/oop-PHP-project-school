@@ -68,17 +68,6 @@ abstract class Account
         }
     }
 
-
-    public function getWonGames(): int
-    {
-        return $this->wonGames;
-    }
-
-    public function getLongestStreak(): int
-    {
-        return $this->longestStreak;
-    }
-
     public function clearStreak(): void
     {
         $this->Streak = 0;
@@ -96,14 +85,6 @@ abstract class Account
     public function getStreak(): int
     {
         return $this->Streak;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLostGames(): int
-    {
-        return $this->lostGames;
     }
 
     public function getAdminStatus()
@@ -148,7 +129,7 @@ abstract class Account
         }
     }
 
-    public static function passwordVerify(string $name, string $password): bool | null
+    public static function passwordVerify(string $name, string $password): bool|null
     {
         $columns = [
             "account" => [
@@ -175,7 +156,7 @@ abstract class Account
         return $return;
     }
 
-    public static function signIn($name): User | null
+    public static function signIn($name): User|null
     {
         $columns = [
             "account" => [
@@ -204,7 +185,7 @@ abstract class Account
         }
     }
 
-    public static function getRole($name): bool | null
+    public static function getRole($name): bool|null
     {
         $columns = [
             "account" => [
@@ -230,7 +211,7 @@ abstract class Account
         }
     }
 
-    public static function getId($name): int | null
+    public static function getId($name): int|null
     {
         $columns = [
             "account" => [
@@ -251,15 +232,116 @@ abstract class Account
         }
     }
 
+    public function getWonGames(): int
+    {
+        $columns = [
+            "game" => [
+                "status",
+                "account_id"
+            ]
+        ];
+        $params = [
+            "status" => "won",
+            "account_id" => $this->id
+        ];
+        $result = Db::$db->select($columns, $params);
 
+        if (!empty($result)) {
+            $this->wonGames = count($result);
+            return count($result);
+        } else {
+            return 0;
+        }
+    }
 
+    public function getLostGames(): int
+    {
+        $columns = [
+            "game" => [
+                "status",
+                "account_id"
+            ]
+        ];
+        $params = [
+            "status" => "lost",
+            "account_id" => $this->id
+        ];
+        $result = Db::$db->select($columns, $params);
 
+        if (!empty($result)) {
+            $this->lostGames = count($result);
+            return count($result);
+        } else {
+            return 0;
+        }
+    }
 
+    public function getCurrentStreak(): int
+    {
+        $columns = [
+            "game" => [
+                "status",
+                "account_id",
+                "date" // Replace with the actual name of your date column
+            ]
+        ];
+        $params = [
+            "account_id" => $this->id
+        ];
+        $result = Db::$db->select($columns, $params);
 
+        $reversedResult = array_reverse($result);
+        $currentStreak = 0;
 
+        foreach ($reversedResult as $row) {
+            if ($row['status'] == 'won') {
+                $currentStreak++;
+            } else {
+                break; // Stop counting streak if a loss is encountered
+            }
+        }
 
+        $this->Streak = $currentStreak;
+        return $currentStreak;
+    }
 
+    public function getLongestStreak(): int
+    {
+        $columns = [
+            "game" => [
+                "status",
+                "account_id",
+                "date" // Replace with the actual name of your date column
+            ]
+        ];
+        $params = [
+            "account_id" => $this->id
+        ];
+        $result = Db::$db->select($columns, $params);
 
+        $reversedResult = array_reverse($result);
+        $currentStreak = 0;
+        $longestStreak = 0;
+
+        foreach ($reversedResult as $row) {
+            if ($row['status'] == 'won') {
+                $currentStreak++;
+            } else {
+                if ($currentStreak > $longestStreak) {
+                    $longestStreak = $currentStreak;
+                }
+                $currentStreak = 0;
+            }
+        }
+
+        // Check for the last streak in case it was the longest
+        if ($currentStreak > $longestStreak) {
+            $longestStreak = $currentStreak;
+        }
+
+        $this->longestStreak = $longestStreak;
+        return $longestStreak;
+    }
 
 
 }
